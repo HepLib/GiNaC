@@ -36,12 +36,7 @@ void archive::archive_ex(const ex &e, const char *name)
 {
 	// Create root node (which recursively archives the whole expression tree)
 	// and add it to the archive
-	// archive_node_id id = add_node(archive_node(*this, e));
-
-    archive_node_id id;
-    auto i = exprtable.find(e);
-    if (i != exprtable.end()) id = i->second;
-    else id = add_node(archive_node(*this, e));
+	archive_node_id id = add_node(archive_node(*this, e));
 
 	// Add root node ID to list of archived expressions
 	archived_ex ae = archived_ex(atomize(name), id);

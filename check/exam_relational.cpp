@@ -116,21 +116,6 @@ static unsigned exam_relational_arith()
 	return result;
 }
 
-// Comparisons should maintain ordering invariants
-static unsigned exam_relational_order()
-{
-	unsigned result = 0;
-	numeric i = 1ll<<32, j = i+1;
-	symbol a;
-	relational x = i==a, y = j==a;
-	if (x.compare(y) != -y.compare(x)) {
-		clog << "comparison should be antisymmetric." << endl;
-		result += 1;
-	}
-
-	return result;
-}
-
 unsigned exam_relational()
 {
 	unsigned result = 0;
@@ -140,7 +125,6 @@ unsigned exam_relational()
 	result += exam_relational_elementary(); cout << '.' << flush;
 	result += exam_relational_possymbol(); cout << '.' << flush;
 	result += exam_relational_arith(); cout << '.' << flush;
-	result += exam_relational_order(); cout << '.' << flush;
 
 	return result;
 }
