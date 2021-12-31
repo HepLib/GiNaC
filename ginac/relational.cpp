@@ -223,8 +223,8 @@ int relational::compare_same_type(const basic & other) const
 				return (o < oth.o) ? -1 : 1;
 			break;
 	}
-	const int lcmpval = lh.compare(oth.rh);
-	return (lcmpval!=0) ? lcmpval : rh.compare(oth.lh);
+	const int lcmpval = lh.compare(oth.lh);
+	return (lcmpval!=0) ? lcmpval : rh.compare(oth.rh);
 }
 
 bool relational::match_same_type(const basic & other) const
