@@ -36,12 +36,14 @@ void archive::archive_ex(const ex &e, const char *name)
 {
 	// Create root node (which recursively archives the whole expression tree)
 	// and add it to the archive
+ 
+    //----------
 	// archive_node_id id = add_node(archive_node(*this, e));
-
     archive_node_id id;
     auto i = exprtable.find(e);
     if (i != exprtable.end()) id = i->second;
     else id = add_node(archive_node(*this, e));
+    //----------
 
 	// Add root node ID to list of archived expressions
 	archived_ex ae = archived_ex(atomize(name), id);
@@ -415,7 +417,14 @@ void archive_node::add_string(const std::string &name, const std::string &value)
 void archive_node::add_ex(const std::string &name, const ex &value)
 {
 	// Recursively create an archive_node and add its ID to the properties of this node
-	archive_node_id id = a.add_node(archive_node(a, value));
+    //----------
+	//archive_node_id id = a.add_node(archive_node(a, value));
+    archive_node_id id;
+    auto i = a.exprtable.find(value);
+    if (i != a.exprtable.end()) id = i->second;
+    else id = a.add_node(archive_node(a, value));
+    //==========
+    
 	props.emplace_back(property(a.atomize(name), PTYPE_NODE, id));
 }
 

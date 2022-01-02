@@ -255,6 +255,7 @@ class archive
 {
 	friend std::ostream &operator<<(std::ostream &os, const archive &ar);
 	friend std::istream &operator>>(std::istream &is, archive &ar);
+    friend class archive_node;
 
 public:
 	archive() {}
