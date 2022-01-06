@@ -215,8 +215,11 @@ bool constant::is_equal_same_type(const basic & other) const
 
 unsigned constant::calchash() const
 {
-	const void* typeid_this = (const void*)typeid(*this).name();
-	hashvalue = golden_ratio_hash((uintptr_t)typeid_this ^ serial);
+	//const void* typeid_this = (const void*)typeid(*this).name();
+    //hashvalue = golden_ratio_hash((uintptr_t)typeid_this ^ serial);
+    static std::hash<std::string> hs;
+    unsigned seed = hs(name+typeid(*this).name());
+    hashvalue = golden_ratio_hash(seed);
 
 	setflag(status_flags::hash_calculated);
 

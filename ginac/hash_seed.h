@@ -32,22 +32,33 @@ namespace GiNaC
  * collisions (and slower evaluation as a result), but being a bit slower
  * is much better than being wrong.
  */
-#ifndef GINAC_HASH_USE_MANGLED_NAME
-static inline unsigned make_hash_seed(const std::type_info& tinfo)
-{
-	// This pointer is the same for all objects of the same type.
-	// Hence we can use it.
-	const void* mangled_name_ptr = (const void*)tinfo.name();
-	unsigned v = golden_ratio_hash((uintptr_t)mangled_name_ptr);
-	return v;
+//#ifndef GINAC_HASH_USE_MANGLED_NAME
+//static inline unsigned make_hash_seed(const std::type_info& tinfo)
+//{
+//	// This pointer is the same for all objects of the same type.
+//	// Hence we can use it.
+//	const void* mangled_name_ptr = (const void*)tinfo.name();
+//	unsigned v = golden_ratio_hash((uintptr_t)mangled_name_ptr);
+//	return v;
+//}
+//#else
+//static unsigned make_hash_seed(const std::type_info& tinfo)
+//{
+//	const char* mangled_name = tinfo.name();
+//	return crc32(mangled_name, std::strlen(mangled_name), 0);
+//}
+//#endif
+
+static inline unsigned make_hash_seed(const std::type_info& tinfo) {
+    static std::hash<std::string> hs;
+    static std::map<const char *, unsigned> dict;
+	auto tn = tinfo.name();
+    auto ti = dict.find(tn);
+    if(ti != dict.end()) return ti->second;
+	return dict[tn] = golden_ratio_hash(hs(tn));
 }
-#else
-static unsigned make_hash_seed(const std::type_info& tinfo)
-{
-	const char* mangled_name = tinfo.name();
-	return crc32(mangled_name, std::strlen(mangled_name), 0);
-}
-#endif
+
+
 } // namespace GiNaC
 #endif /* GINAC_HASH_SEED_H */
 
