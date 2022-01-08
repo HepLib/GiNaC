@@ -88,24 +88,24 @@ spinidx::spinidx(const ex & v, const ex & d, bool cov, bool dot) : inherited(v, 
 // archiving
 //////////
 
-void idx::read_archive(const archive_node& n, lst& sym_lst) 
+void idx::read_archive(const archive_node& n) 
 {
-	inherited::read_archive(n, sym_lst);
-	n.find_ex("value", value, sym_lst);
-	n.find_ex("dim", dim, sym_lst);
+	inherited::read_archive(n);
+	n.find_ex("value", value);
+	n.find_ex("dim", dim);
 }
 GINAC_BIND_UNARCHIVER(idx);
 
-void varidx::read_archive(const archive_node& n, lst& sym_lst)
+void varidx::read_archive(const archive_node& n)
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 	n.find_bool("covariant", covariant);
 }
 GINAC_BIND_UNARCHIVER(varidx);
 
-void spinidx::read_archive(const archive_node& n, lst& sym_lst)
+void spinidx::read_archive(const archive_node& n)
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 	n.find_bool("dotted", dotted);
 }
 GINAC_BIND_UNARCHIVER(spinidx);

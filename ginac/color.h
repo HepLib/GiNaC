@@ -49,7 +49,7 @@ public:
 	color(unsigned char rl, const exvector & v);
 	color(unsigned char rl, exvector && v);
 	void archive(archive_node& n) const override;
-	void read_archive(const archive_node& n, lst& sym_lst) override;
+	void read_archive(const archive_node& n) override;
 
 	// functions overriding virtual functions from base classes
 protected:

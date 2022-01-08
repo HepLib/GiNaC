@@ -58,7 +58,7 @@ public:
 	/** Save (a.k.a. serialize) object into archive. */
 	void archive(archive_node& n) const override;
 	/** Read (a.k.a. deserialize) object from archive. */
-	void read_archive(const archive_node& n, lst& syms) override;
+	void read_archive(const archive_node& n) override;
 protected:
 	ex derivative(const symbol & s) const override;
 	ex series(const relational & r, int order, unsigned options = 0) const override;

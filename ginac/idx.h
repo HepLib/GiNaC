@@ -54,7 +54,7 @@ public:
 	ex evalf() const override;
 	ex subs(const exmap & m, unsigned options = 0) const override;
 	void archive(archive_node& n) const override;
-	void read_archive(const archive_node& n, lst& syms) override;
+	void read_archive(const archive_node& n) override;
 protected:
 	ex derivative(const symbol & s) const override;
 	bool match_same_type(const basic & other) const override;
@@ -127,7 +127,7 @@ public:
 public:
 	bool is_dummy_pair_same_type(const basic & other) const override;
 	void archive(archive_node& n) const override;
-	void read_archive(const archive_node& n, lst& syms) override;
+	void read_archive(const archive_node& n) override;
 protected:
 	bool match_same_type(const basic & other) const override;
 
@@ -179,7 +179,7 @@ public:
 	// complex conjugation
 	ex conjugate() const override { return toggle_dot(); }
 	void archive(archive_node& n) const override;
-	void read_archive(const archive_node& n, lst& syms) override;
+	void read_archive(const archive_node& n) override;
 protected:
 	bool match_same_type(const basic & other) const override;
 

@@ -41,6 +41,7 @@ class symbol : public basic
 	// other constructors
 public:
 	explicit symbol(const std::string & initname);
+	symbol(const std::string & initname, unsigned s);
 	symbol(const std::string & initname, const std::string & texname);
 	
 	// functions overriding virtual functions from base classes
@@ -60,7 +61,7 @@ public:
 	/** Save (a.k.a. serialize) object into archive. */
 	void archive(archive_node& n) const override;
 	/** Read (a.k.a. deserialize) object from archive. */
-	void read_archive(const archive_node& n, lst& syms) override;
+	void read_archive(const archive_node& n) override;
 protected:
 	ex derivative(const symbol & s) const override;
 	bool is_equal_same_type(const basic & other) const override;

@@ -82,7 +82,7 @@ archive_node &archive::get_node(archive_node_id id)
 }
 
 
-ex archive::unarchive_ex(const lst &sym_lst, const char *name) const
+ex archive::unarchive_ex(const char *name) const
 {
 	// Find root node
 	std::string name_string = name;
@@ -97,21 +97,19 @@ ex archive::unarchive_ex(const lst &sym_lst, const char *name) const
 
 found:
 	// Recursively unarchive all nodes, starting at the root node
-	lst sym_lst_copy = sym_lst;
-	return nodes[i->root].unarchive(sym_lst_copy);
+	return nodes[i->root].unarchive();
 }
 
-ex archive::unarchive_ex(const lst &sym_lst, unsigned index) const
+ex archive::unarchive_ex(unsigned index) const
 {
 	if (index >= exprs.size())
 		throw (std::range_error("index of archived expression out of range"));
 
 	// Recursively unarchive all nodes, starting at the root node
-	lst sym_lst_copy = sym_lst;
-	return nodes[exprs[index].root].unarchive(sym_lst_copy);
+	return nodes[exprs[index].root].unarchive();
 }
 
-ex archive::unarchive_ex(const lst &sym_lst, std::string &name, unsigned index) const
+ex archive::unarchive_ex(std::string &name, unsigned index) const
 {
 	if (index >= exprs.size())
 		throw (std::range_error("index of archived expression out of range"));
@@ -120,8 +118,7 @@ ex archive::unarchive_ex(const lst &sym_lst, std::string &name, unsigned index) 
 	name = unatomize(exprs[index].name);
 
 	// Recursively unarchive all nodes, starting at the root node
-	lst sym_lst_copy = sym_lst;
-	return nodes[exprs[index].root].unarchive(sym_lst_copy);
+	return nodes[exprs[index].root].unarchive();
 }
 
 unsigned archive::num_expressions() const
@@ -483,12 +480,12 @@ bool archive_node::find_string(const std::string &name, std::string &ret, unsign
 	return false;
 }
 
-void archive_node::find_ex_by_loc(archive_node_cit loc, ex &ret, lst &sym_lst) const
+void archive_node::find_ex_by_loc(archive_node_cit loc, ex &ret) const
 {
-	ret = a.get_node(loc->value).unarchive(sym_lst);
+	ret = a.get_node(loc->value).unarchive();
 }
 
-bool archive_node::find_ex(const std::string &name, ex &ret, lst &sym_lst, unsigned index) const
+bool archive_node::find_ex(const std::string &name, ex &ret, unsigned index) const
 {
 	archive_atom name_atom = a.atomize(name);
 	auto i = props.begin(), iend = props.end();
@@ -496,7 +493,7 @@ bool archive_node::find_ex(const std::string &name, ex &ret, lst &sym_lst, unsig
 	while (i != iend) {
 		if (i->type == PTYPE_NODE && i->name == name_atom) {
 			if (found_index == index) {
-				ret = a.get_node(i->value).unarchive(sym_lst);
+				ret = a.get_node(i->value).unarchive();
 				return true;
 			}
 			found_index++;
@@ -555,7 +552,7 @@ static synthesize_func find_factory_fcn(const std::string& name)
 }
 
 /** Convert archive node to GiNaC expression. */
-ex archive_node::unarchive(lst &sym_lst) const
+ex archive_node::unarchive() const
 {
 	// Already unarchived? Then return cached unarchived expression.
 	if (has_expression)
@@ -570,7 +567,7 @@ ex archive_node::unarchive(lst &sym_lst) const
 	synthesize_func factory_fcn = find_factory_fcn(class_name);
 	ptr<basic> obj(factory_fcn());
 	obj->setflag(status_flags::dynallocated);
-	obj->read_archive(*this, sym_lst);
+	obj->read_archive(*this);
 	e = ex(*obj);
 	has_expression = true;
 	return e;

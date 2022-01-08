@@ -60,7 +60,7 @@ GINAC_IMPLEMENT_REGISTERED_CLASS_OPT(symmetry, basic,
 
 symmetry::symmetry() :  type(none)
 {
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 //////////
@@ -70,13 +70,13 @@ symmetry::symmetry() :  type(none)
 symmetry::symmetry(unsigned i) :  type(none)
 {
 	indices.insert(i);
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 symmetry::symmetry(symmetry_type t, const symmetry &c1, const symmetry &c2) :  type(t)
 {
 	add(c1); add(c2);
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 //////////
@@ -84,9 +84,9 @@ symmetry::symmetry(symmetry_type t, const symmetry &c1, const symmetry &c2) :  t
 //////////
 
 /** Construct object from archive_node. */
-void symmetry::read_archive(const archive_node &n, lst &sym_lst)
+void symmetry::read_archive(const archive_node &n)
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 	unsigned t;
 	if (!(n.find_unsigned("type", t)))
 		throw (std::runtime_error("unknown symmetry type in archive"));
@@ -95,7 +95,7 @@ void symmetry::read_archive(const archive_node &n, lst &sym_lst)
 	unsigned i = 0;
 	while (true) {
 		ex e;
-		if (n.find_ex("child", e, sym_lst, i))
+		if (n.find_ex("child", e, i))
 			add(ex_to<symmetry>(e));
 		else
 			break;

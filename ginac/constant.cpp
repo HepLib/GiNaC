@@ -47,7 +47,7 @@ GINAC_IMPLEMENT_REGISTERED_CLASS_OPT(constant, basic,
 
 constant::constant() : ef(nullptr), serial(next_serial++), domain(domain::complex)
 {
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 //////////
@@ -63,7 +63,7 @@ constant::constant(const std::string & initname, evalffunctype efun, const std::
 		TeX_name = "\\mathrm{" + name + "}";
 	else
 		TeX_name = texname;
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 constant::constant(const std::string & initname, const numeric & initnumber, const std::string & texname, unsigned dm)
@@ -73,14 +73,14 @@ constant::constant(const std::string & initname, const numeric & initnumber, con
 		TeX_name = "\\mathrm{" + name + "}";
 	else
 		TeX_name = texname;
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 //////////
 // archiving
 //////////
 
-void constant::read_archive(const archive_node &n, lst &sym_lst)
+void constant::read_archive(const archive_node &n)
 {
 	// Find constant by name (!! this is bad: 'twould be better if there
 	// was a list of all global constants that we could search)
@@ -242,7 +242,7 @@ unsigned constant::calchash() const
 // static member variables
 //////////
 
-unsigned constant::next_serial = 0;
+unsigned constant::next_serial = 1;
 
 //////////
 // global constants

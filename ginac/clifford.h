@@ -53,7 +53,7 @@ public:
 public:
 	unsigned precedence() const override { return 65; }
 	void archive(archive_node& n) const override;
-	void read_archive(const archive_node& n, lst& sym_lst) override;
+	void read_archive(const archive_node& n) override;
 protected:
 	ex eval_ncmul(const exvector & v) const override;
 	bool match_same_type(const basic & other) const override;

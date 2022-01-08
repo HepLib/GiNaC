@@ -129,10 +129,10 @@ indexed::indexed(const symmetry & symm, exvector && v) : inherited(std::move(v))
 // archiving
 //////////
 
-void indexed::read_archive(const archive_node &n, lst &sym_lst)
+void indexed::read_archive(const archive_node &n)
 {
-	inherited::read_archive(n, sym_lst);
-	if (!n.find_ex("symmetry", symtree, sym_lst)) {
+	inherited::read_archive(n);
+	if (!n.find_ex("symmetry", symtree)) {
 		// GiNaC versions <= 0.9.0 had an unsigned "symmetry" property
 		unsigned symm = 0;
 		n.find_unsigned("symmetry", symm);

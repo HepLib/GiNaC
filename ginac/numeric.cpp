@@ -73,7 +73,7 @@ GINAC_IMPLEMENT_REGISTERED_CLASS_OPT(numeric, basic,
 numeric::numeric()
 {
 	value = cln::cl_I(0);
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 //////////
@@ -99,7 +99,7 @@ numeric::numeric(int i)
 	else
 		value = cln::cl_I(static_cast<long>(i));
 #endif
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 
@@ -120,33 +120,33 @@ numeric::numeric(unsigned int i)
 	else
 		value = cln::cl_I(static_cast<unsigned long>(i));
 #endif
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 
 numeric::numeric(long i)
 {
 	value = cln::cl_I(i);
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 
 numeric::numeric(unsigned long i)
 {
 	value = cln::cl_I(i);
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 numeric::numeric(long long i)
 {
 	value = cln::cl_I(i);
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 numeric::numeric(unsigned long long i)
 {
 	value = cln::cl_I(i);
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 /** Constructor for rational numerics a/b.
@@ -157,7 +157,7 @@ numeric::numeric(long numer, long denom)
 	if (!denom)
 		throw std::overflow_error("division by zero");
 	value = cln::cl_I(numer) / cln::cl_I(denom);
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 
@@ -167,7 +167,7 @@ numeric::numeric(double d)
 	// more general cl_F, since that would give us a cl_DF only which
 	// will not be promoted to cl_LF if overflow occurs:
 	value = cln::cl_float(d, cln::default_float_format);
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 
@@ -246,7 +246,7 @@ numeric::numeric(const char *s)
 		}
 	} while (delim != std::string::npos);
 	value = ctorval;
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 
@@ -255,7 +255,7 @@ numeric::numeric(const char *s)
 numeric::numeric(const cln::cl_N &z)
 {
 	value = z;
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 
@@ -286,9 +286,9 @@ static const cln::cl_F read_real_float(std::istream& s)
 	return x;
 }
 
-void numeric::read_archive(const archive_node &n, lst &sym_lst)
+void numeric::read_archive(const archive_node &n)
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 	value = 0;
 	
 	// Read number as string
@@ -331,7 +331,7 @@ void numeric::read_archive(const archive_node &n, lst &sym_lst)
 				break;
 		}
 	}
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 GINAC_BIND_UNARCHIVER(numeric);
 

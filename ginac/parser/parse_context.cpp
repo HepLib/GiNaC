@@ -39,7 +39,7 @@ find_or_insert_symbol(const std::string& name, symtab& syms, const bool strict)
 				std::string("find_or_insert_symbol: symbol \"") 
 				+ name + "\" not found");
 
-	const symbol sy(name);
+	const symbol sy(name,0);
 	syms[name] = sy;
 	return sy;
 }

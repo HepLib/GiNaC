@@ -153,7 +153,7 @@ public:
 	/** Save (a.k.a. serialize) indexed object into archive. */
 	void archive(archive_node& n) const override;
 	/** Read (a.k.a. deserialize) indexed object from archive. */
-	void read_archive(const archive_node& n, lst& syms) override;
+	void read_archive(const archive_node& n) override;
 protected:
 	ex derivative(const symbol & s) const override;
 	ex thiscontainer(const exvector & v) const override;

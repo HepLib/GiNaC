@@ -47,7 +47,7 @@ GINAC_IMPLEMENT_REGISTERED_CLASS_OPT(symbol, basic,
 
 symbol::symbol() : serial(next_serial++), name(""), TeX_name("")
 {
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 // realsymbol
@@ -69,13 +69,18 @@ possymbol::possymbol() : realsymbol() { }
 symbol::symbol(const std::string & initname) : serial(next_serial++),
 	name(initname), TeX_name("")
 {
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+}
+
+symbol::symbol(const std::string & initname, unsigned s) : serial(s), name(initname), TeX_name("")
+{
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 symbol::symbol(const std::string & initname, const std::string & texname) :
 	serial(next_serial++), name(initname), TeX_name(texname)
 {
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 // realsymbol
@@ -97,36 +102,20 @@ possymbol::possymbol(const std::string & initname, const std::string & texname)
 //////////
 
 /** Read object from archive_node. */
-void symbol::read_archive(const archive_node &n, lst &sym_lst)
+void symbol::read_archive(const archive_node &n)
 {
-	inherited::read_archive(n, sym_lst);
-	serial = next_serial++;
+	inherited::read_archive(n);
+	//serial = next_serial++;
+    serial = 0;
 	std::string tmp_name;
 	n.find_string("name", tmp_name);
 
-	// If symbol is in sym_lst, return the existing symbol
-	for (auto & s : sym_lst) {
-		if (is_a<symbol>(s) && (ex_to<symbol>(s).name == tmp_name)) {
-			*this = ex_to<symbol>(s);
-			// XXX: This method is responsible for reading realsymbol
-			// and possymbol objects too. But
-			// basic::operator=(const basic& other)
-			// resets status_flags::evaluated if other and *this are
-			// of different types. Usually this is a good idea, but
-			// doing this for symbols is wrong (for one, nothing is
-			// going to set status_flags::evaluated, evaluation will
-			// loop forever). Therefore we need to restore flags.
-			setflag(status_flags::evaluated | status_flags::expanded);
-			return;
-		}
-	}
 	name = tmp_name;
 	if (!n.find_string("TeXname", TeX_name))
 		TeX_name = std::string("");
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 
 	setflag(status_flags::dynallocated);
-	sym_lst.append(*this);
 }
 
 /** Archive the object. */
@@ -264,6 +253,12 @@ int symbol::compare_same_type(const basic & other) const
 {
 	GINAC_ASSERT(is_a<symbol>(other));
 	const symbol *o = static_cast<const symbol *>(&other);
+    if(serial==0 && o->serial==0) {
+        int ret = get_name().compare(o->get_name());
+        if(ret==0) return 0;
+        else if(ret<0) return -1;
+        else return 1;
+    }
 	if (serial==o->serial) return 0;
 	return serial < o->serial ? -1 : 1;
 }
@@ -272,13 +267,21 @@ bool symbol::is_equal_same_type(const basic & other) const
 {
 	GINAC_ASSERT(is_a<symbol>(other));
 	const symbol *o = static_cast<const symbol *>(&other);
+    if(serial==0 && o->serial==0) return get_name()==o->get_name();
 	return serial==o->serial;
 }
 
 unsigned symbol::calchash() const
 {
+    if(serial == 0) { // from HepLib::Symbol::calchash
+        static std::hash<std::string> hs;
+        unsigned seed = hs(get_name()+typeid(*this).name());
+        hashvalue = golden_ratio_hash(seed);
+        setflag(status_flags::hash_calculated);
+        return hashvalue;
+    }
 	unsigned seed = make_hash_seed(typeid(*this));
-	hashvalue = golden_ratio_hash(seed ^ serial);
+    hashvalue = golden_ratio_hash(seed ^ serial);
 	setflag(status_flags::hash_calculated);
 	return hashvalue;
 }
@@ -359,6 +362,6 @@ GINAC_BIND_UNARCHIVER(possymbol);
 
 // private
 
-unsigned symbol::next_serial = 0;
+unsigned symbol::next_serial = 1;
 
 } // namespace GiNaC

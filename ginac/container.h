@@ -120,16 +120,16 @@ public:
 	ex & let_op(size_t i) override;
 	ex subs(const exmap & m, unsigned options = 0) const override;
 
-	void read_archive(const archive_node &n, lst &sym_lst) override
+	void read_archive(const archive_node &n) override
 	{
-		inherited::read_archive(n, sym_lst);
+		inherited::read_archive(n);
 		setflag(get_default_flags());
 
 		auto range =  n.find_property_range("seq", "seq");
 		this->reserve(this->seq, range.end - range.begin);
 		for (archive_node::archive_node_cit i=range.begin; i<range.end; ++i) {
 			ex e;
-			n.find_ex_by_loc(i, e, sym_lst);
+			n.find_ex_by_loc(i, e);
 			this->seq.emplace_back(e);
 		}
 	}

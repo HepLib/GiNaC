@@ -127,12 +127,12 @@ public:
 
 	/** Retrieve property of type "ex" from node.
 	 *  @return "true" if property was found, "false" otherwise */
-	bool find_ex(const std::string &name, ex &ret, lst &sym_lst, unsigned index = 0) const;
+	bool find_ex(const std::string &name, ex &ret, unsigned index = 0) const;
 
 	/** Retrieve property of type "ex" from the node if it is known
 	 *  that this node in fact contains such a property at the given
 	 *  location. This is much more efficient than the preceding function. */
-	void find_ex_by_loc(archive_node_cit loc, ex &ret, lst &sym_lst) const;
+	void find_ex_by_loc(archive_node_cit loc, ex &ret) const;
 
 	/** Retrieve property of type "ex" from node, returning the node of
 	 *  the sub-expression. */
@@ -141,7 +141,7 @@ public:
 	/** Return vector of properties stored in node. */
 	void get_properties(propinfovector &v) const;
 
-	ex unarchive(lst &sym_lst) const;
+	ex unarchive() const;
 	bool has_same_ex_as(const archive_node &other) const;
 	bool has_ex() const {return has_expression;}
 	ex get_ex() const {return e;}
@@ -273,22 +273,19 @@ public:
 	void archive_ex(const ex &e, const char *name);
 
 	/** Retrieve expression from archive by name.
-	 *  @param sym_lst list of pre-defined symbols
 	 *  @param name name of expression */
-	ex unarchive_ex(const lst &sym_lst, const char *name) const;
+	ex unarchive_ex(const char *name) const;
 
 	/** Retrieve expression from archive by index.
-	 *  @param sym_lst list of pre-defined symbols
 	 *  @param index index of expression
 	 *  @see count_expressions */
-	ex unarchive_ex(const lst &sym_lst, unsigned index = 0) const;
+	ex unarchive_ex(unsigned index = 0) const;
 
 	/** Retrieve expression and its name from archive by index.
-	 *  @param sym_lst list of pre-defined symbols
 	 *  @param name receives the name of the expression
 	 *  @param index index of expression
 	 *  @see count_expressions */
-	ex unarchive_ex(const lst &sym_lst, std::string &name, unsigned index = 0) const;
+	ex unarchive_ex(std::string &name, unsigned index = 0) const;
 
 	/** Return number of archived expressions. */
 	unsigned num_expressions() const;

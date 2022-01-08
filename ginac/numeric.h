@@ -120,7 +120,7 @@ public:
 	/** Save (a.k.a. serialize) object into archive. */
 	void archive(archive_node& n) const override;
 	/** Read (a.k.a. deserialize) object from archive. */
-	void read_archive(const archive_node& n, lst& syms) override;
+	void read_archive(const archive_node& n) override;
 protected:
 	/** Implementation of ex::diff for a numeric always returns 0.
 	 *  @see ex::diff */

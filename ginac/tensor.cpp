@@ -66,7 +66,7 @@ GINAC_IMPLEMENT_REGISTERED_CLASS_OPT(tensepsilon, tensor,
 
 tensor::tensor()
 {
-	setflag(status_flags::evaluated | status_flags::expanded);
+	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
 }
 
 DEFAULT_CTOR(tensdelta)
@@ -96,9 +96,9 @@ tensepsilon::tensepsilon(bool mink, bool ps) : minkowski(mink), pos_sig(ps)
 // archiving
 //////////
 
-void minkmetric::read_archive(const archive_node& n, lst& sym_lst)
+void minkmetric::read_archive(const archive_node& n)
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 	n.find_bool("pos_sig", pos_sig);
 }
 GINAC_BIND_UNARCHIVER(minkmetric);
@@ -109,9 +109,9 @@ void minkmetric::archive(archive_node &n) const
 	n.add_bool("pos_sig", pos_sig);
 }
 
-void tensepsilon::read_archive(const archive_node& n, lst& sym_lst)
+void tensepsilon::read_archive(const archive_node& n)
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 	n.find_bool("minkowski", minkowski);
 	n.find_bool("pos_sig", pos_sig);
 }

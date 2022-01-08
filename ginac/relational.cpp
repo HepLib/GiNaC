@@ -56,15 +56,15 @@ relational::relational(const ex & lhs, const ex & rhs, operators oper) :
 // archiving
 //////////
 
-void relational::read_archive(const archive_node& n, lst& sym_lst)
+void relational::read_archive(const archive_node& n)
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 	unsigned int opi;
 	if (!(n.find_unsigned("op", opi)))
 		throw (std::runtime_error("unknown relational operator in archive"));
 	o = (operators)opi;
-	n.find_ex("lh", lh, sym_lst);
-	n.find_ex("rh", rh, sym_lst);
+	n.find_ex("lh", lh);
+	n.find_ex("rh", rh);
 }
 GINAC_BIND_UNARCHIVER(relational);
 

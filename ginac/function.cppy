@@ -256,9 +256,9 @@ function::function(unsigned ser, exvector && v)
 //////////
 
 /** Construct object from archive_node. */
-void function::read_archive(const archive_node& n, lst& sym_lst)
+void function::read_archive(const archive_node& n)
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 	// Find serial number by function name and number of parameters
 	unsigned np = seq.size();
 	std::string s;

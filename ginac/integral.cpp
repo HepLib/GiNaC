@@ -70,13 +70,13 @@ integral::integral(const ex & x_, const ex & a_, const ex & b_, const ex & f_)
 // archiving
 //////////
 
-void integral::read_archive(const archive_node& n, lst& sym_lst)
+void integral::read_archive(const archive_node& n)
 {
-	inherited::read_archive(n, sym_lst);
-	n.find_ex("x", x, sym_lst);
-	n.find_ex("a", a, sym_lst);
-	n.find_ex("b", b, sym_lst);
-	n.find_ex("f", f, sym_lst);
+	inherited::read_archive(n);
+	n.find_ex("x", x);
+	n.find_ex("a", a);
+	n.find_ex("b", b);
+	n.find_ex("f", f);
 }
 
 void integral::archive(archive_node & n) const

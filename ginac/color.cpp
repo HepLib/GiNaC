@@ -103,9 +103,9 @@ return_type_t color::return_type_tinfo() const
 // archiving
 //////////
 
-void color::read_archive(const archive_node& n, lst& sym_lst)
+void color::read_archive(const archive_node& n)
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 	unsigned rl;
 	n.find_unsigned("label", rl);
 	representation_label = rl;

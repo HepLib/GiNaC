@@ -123,13 +123,13 @@ return_type_t clifford::return_type_tinfo() const
 // archiving
 //////////
 
-void clifford::read_archive(const archive_node& n, lst& sym_lst)
+void clifford::read_archive(const archive_node& n)
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 	unsigned rl;
 	n.find_unsigned("label", rl);
 	representation_label = rl;
-	n.find_ex("metric", metric, sym_lst);
+	n.find_ex("metric", metric);
 	n.find_unsigned("commutator_sign+1", rl);
 	commutator_sign = rl - 1;
 }

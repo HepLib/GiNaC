@@ -116,22 +116,22 @@ pseries::pseries(const ex &rel_, epvector &&ops_)
  *  Archiving
  */
 
-void pseries::read_archive(const archive_node &n, lst &sym_lst) 
+void pseries::read_archive(const archive_node &n) 
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 	auto range = n.find_property_range("coeff", "power");
 	seq.reserve((range.end-range.begin)/2);
 
 	for (auto loc = range.begin; loc < range.end;) {
 		ex rest;
 		ex coeff;
-		n.find_ex_by_loc(loc++, rest, sym_lst);
-		n.find_ex_by_loc(loc++, coeff, sym_lst);
+		n.find_ex_by_loc(loc++, rest);
+		n.find_ex_by_loc(loc++, coeff);
 		seq.emplace_back(expair(rest, coeff));
 	}
 
-	n.find_ex("var", var, sym_lst);
-	n.find_ex("point", point, sym_lst);
+	n.find_ex("var", var);
+	n.find_ex("point", point);
 }
 
 void pseries::archive(archive_node &n) const

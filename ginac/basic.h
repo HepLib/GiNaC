@@ -190,6 +190,7 @@ public:
 	virtual ex coeff(const ex & s, int n = 1) const;
 
 	// expand/collect
+    //virtual ex expand(std::function<bool(const ex &)> hf) const; //TODO: add another expand funciton
 	virtual ex expand(unsigned options = 0) const;
 	virtual ex collect(const ex & s, bool distributed = false) const;
 
@@ -261,7 +262,7 @@ public:
 	 *  a constructor in every class, even if all it does is simply
 	 *  calling constructor of a superclass.
 	 */
-	virtual void read_archive(const archive_node& n, lst& syms); // no const
+	virtual void read_archive(const archive_node& n); // no const
 
 	ex subs_one_level(const exmap & m, unsigned options) const;
 	ex diff(const symbol & s, unsigned nth = 1) const;

@@ -54,7 +54,7 @@ public:
 	ex real_part() const override;
 	ex imag_part() const override;
 	void archive(archive_node& n) const override;
-	void read_archive(const archive_node& n, lst& syms) override;
+	void read_archive(const archive_node& n) override;
 protected:
 	ex derivative(const symbol & s) const override;
 	bool is_equal_same_type(const basic & other) const override;

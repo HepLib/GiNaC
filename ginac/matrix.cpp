@@ -131,9 +131,9 @@ matrix::matrix(unsigned r, unsigned c, exvector && m2)
 // archiving
 //////////
 
-void matrix::read_archive(const archive_node &n, lst &sym_lst)
+void matrix::read_archive(const archive_node &n)
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 
 	if (!(n.find_unsigned("row", row)) || !(n.find_unsigned("col", col)))
 		throw (std::runtime_error("unknown matrix dimensions in archive"));
@@ -143,7 +143,7 @@ void matrix::read_archive(const archive_node &n, lst &sym_lst)
 	auto range = n.find_property_range("m", "m");
 	for (auto i=range.begin; i != range.end; ++i) {
 		ex e;
-		n.find_ex_by_loc(i, e, sym_lst);
+		n.find_ex_by_loc(i, e);
 		m.emplace_back(e);
 	}
 }

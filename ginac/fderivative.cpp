@@ -64,9 +64,9 @@ fderivative::fderivative(unsigned ser, const paramset & params, exvector && v) :
 // archiving
 //////////
 
-void fderivative::read_archive(const archive_node& n, lst& sym_lst)
+void fderivative::read_archive(const archive_node& n)
 {
-	inherited::read_archive(n, sym_lst);
+	inherited::read_archive(n);
 	unsigned i = 0;
 	while (true) {
 		unsigned u;
