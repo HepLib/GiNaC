@@ -2688,7 +2688,7 @@ ex power::to_rational(exmap & repl) const
 ex power::to_polynomial(exmap & repl) const
 {
 	if (exponent.info(info_flags::posint))
-		return pow(basis.to_rational(repl), exponent);
+		return pow(basis.to_polynomial(repl), exponent);
 	else if (exponent.info(info_flags::negint))
 	{
 		ex basis_pref = collect_common_factors(basis);
