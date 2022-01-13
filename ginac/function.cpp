@@ -1583,7 +1583,12 @@ ex function::eval_ncmul(const exvector & v) const
 
 unsigned function::calchash() const
 {
-	unsigned v = golden_ratio_hash(make_hash_seed(typeid(*this)) ^ serial);
+    static std::hash<std::string> hs;
+    unsigned seed = hs(get_name()+typeid(*this).name());
+    unsigned v = golden_ratio_hash(seed);
+    // serial depend on compiler or system, not universal
+            
+	//unsigned v = golden_ratio_hash(make_hash_seed(typeid(*this)) ^ serial);    
 	for (size_t i=0; i<nops(); i++) {
 		v = rotate_left(v);
 		v ^= this->op(i).gethash();
