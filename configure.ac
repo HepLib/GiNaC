@@ -11,8 +11,8 @@ m4_define([ginac_lt_current], GINAC_GET_LTVERSION([CURRENT]))
 m4_define([ginac_lt_age], GINAC_GET_LTVERSION([AGE]))
 m4_define([ginac_lt_revision], GINAC_GET_LTVERSION([REVISION]))
 
-AC_INIT([GiNaC], ginac_version, [ginac-list@ginac.de], [ginac], [https://www.ginac.de/])
-AC_PREREQ(2.59)
+AC_INIT([GiNaC], [ginac_version], [ginac-list@ginac.de], [ginac], [https://www.ginac.de/])
+AC_PREREQ([2.59])
 AC_CONFIG_SRCDIR(ginac/basic.cpp)
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_HEADERS([config/config.h])
@@ -28,8 +28,8 @@ dnl Check for the compiler and all the utilities needed for the build.
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
-AM_PROG_LIBTOOL
-AC_PROG_LEX
+LT_INIT
+AC_PROG_LEX([yywrap])
 AC_PROG_YACC
 AC_PATH_PROG(YACCEXE, $YACC, "")
 AS_IF([test "x$LEX" = "x:" -a ! -f $srcdir/ginsh/ginsh_lexer.cpp],
@@ -40,9 +40,6 @@ AS_IF([test -z "$YACCEXE" -a ! -f $srcdir/ginsh/ginsh_parser.hpp],
 dnl Switch to C++ language mode for the following libraries and headers.
 AC_LANG([C++])
 AX_CXX_COMPILE_STDCXX([11])
-
-dnl Make sure all the necessary standard headers are installed on the system.
-GINAC_STD_CXX_HEADERS
 
 dnl We need to have CLN installed.
 PKG_CHECK_MODULES(CLN, cln >= 1.2.2)

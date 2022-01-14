@@ -1,5 +1,9 @@
 This file records noteworthy changes.
 
+1.8.2 (1 January 2022)
+* Fix elusive bug in comparing relational objects.
+* Ensure modular_form_kernel::series() includes an Order term.
+
 1.8.1 (9 August 2021)
 * Add method relational::canonical() and improve conversion of relational to
   Boolean (it now works on many simple symbolic cases).

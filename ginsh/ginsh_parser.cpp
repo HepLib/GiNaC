@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.7.5.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
@@ -16,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -46,10 +46,10 @@
    USER NAME SPACE" below.  */
 
 /* Identify Bison output, and Bison version.  */
-#define YYBISON 30705
+#define YYBISON 30802
 
 /* Bison version string.  */
-#define YYBISON_VERSION "3.7.5"
+#define YYBISON_VERSION "3.8.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -401,12 +401,18 @@ typedef int yy_state_fast_t;
 # define YY_USE(E) /* empty */
 #endif
 
-#if defined __GNUC__ && ! defined __ICC && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
 /* Suppress an incorrect diagnostic about yylval being uninitialized.  */
-# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                            \
+#if defined __GNUC__ && ! defined __ICC && 406 <= __GNUC__ * 100 + __GNUC_MINOR__
+# if __GNUC__ * 100 + __GNUC_MINOR__ < 407
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
+    _Pragma ("GCC diagnostic push")                                     \
+    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")
+# else
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
     _Pragma ("GCC diagnostic push")                                     \
     _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")              \
     _Pragma ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
+# endif
 # define YY_IGNORE_MAYBE_UNINITIALIZED_END      \
     _Pragma ("GCC diagnostic pop")
 #else
@@ -623,7 +629,7 @@ static const yytype_int8 yytranslate[] =
 };
 
 #if YYDEBUG
-  /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
+/* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
        0,   146,   146,   147,   150,   151,   160,   168,   176,   190,
@@ -666,19 +672,6 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#ifdef YYPRINT
-/* YYTOKNUM[NUM] -- (External) token number corresponding to the
-   (internal) symbol number NUM (which must be that of a token).  */
-static const yytype_int16 yytoknum[] =
-{
-       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280,   281,    61,    60,    62,
-      43,    45,    42,    47,   282,    94,    33,    59,    58,    40,
-      41,    63,    39,   123,   125,    91,    93,    44
-};
-#endif
-
 #define YYPACT_NINF (-36)
 
 #define yypact_value_is_default(Yyn) \
@@ -689,8 +682,8 @@ static const yytype_int16 yytoknum[] =
 #define yytable_value_is_error(Yyn) \
   0
 
-  /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
-     STATE-NUM.  */
+/* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
+   STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
      -36,   100,   -36,   -35,   -36,   -26,   -36,   -13,   -36,   -36,
@@ -708,9 +701,9 @@ static const yytype_int16 yypact[] =
       -3,   -36
 };
 
-  /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
-     Performed when YYTABLE does not specify something else to do.  Zero
-     means the default is an error.  */
+/* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+   Performed when YYTABLE does not specify something else to do.  Zero
+   means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
        2,     0,     1,     0,    30,    31,    33,    34,    35,    36,
@@ -728,21 +721,21 @@ static const yytype_int8 yydefact[] =
        0,    65
 };
 
-  /* YYPGOTO[NTERM-NUM].  */
+/* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
      -36,   -36,   -36,   -36,    -1,   -36,   -36,   -36,   -36,   -28
 };
 
-  /* YYDEFGOTO[NTERM-NUM].  */
+/* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
        0,     1,    32,    43,    87,    76,    56,    57,    59,    88
 };
 
-  /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
-     positive, shift that token.  If negative, reduce the rule whose
-     number is the opposite.  If YYTABLE_NINF, syntax error.  */
+/* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+   positive, shift that token.  If negative, reduce the rule whose
+   number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
       33,    36,    34,    35,    70,    71,     4,     5,     6,     7,
@@ -813,8 +806,8 @@ static const yytype_int8 yycheck[] =
       36
 };
 
-  /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
-     symbol of state STATE-NUM.  */
+/* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
+   state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
        0,    49,     0,     1,     3,     4,     5,     6,     7,     8,
@@ -832,7 +825,7 @@ static const yytype_int8 yystos[] =
       57,    46
 };
 
-  /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
+/* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
        0,    48,    49,    49,    50,    50,    50,    50,    50,    50,
@@ -844,7 +837,7 @@ static const yytype_int8 yyr1[] =
       54,    54,    55,    55,    56,    56,    57,    57
 };
 
-  /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
+/* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     0,     2,     1,     2,     2,     5,     5,     5,
@@ -865,6 +858,7 @@ enum { YYENOMEM = -2 };
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
 #define YYERROR         goto yyerrorlab
+#define YYNOMEM         goto yyexhaustedlab
 
 
 #define YYRECOVERING()  (!!yyerrstatus)
@@ -905,10 +899,7 @@ do {                                            \
     YYFPRINTF Args;                             \
 } while (0)
 
-/* This macro is provided for backward compatibility. */
-# ifndef YY_LOCATION_PRINT
-#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
-# endif
+
 
 
 # define YY_SYMBOL_PRINT(Title, Kind, Value, Location)                    \
@@ -935,10 +926,6 @@ yy_symbol_value_print (FILE *yyo,
   YY_USE (yyoutput);
   if (!yyvaluep)
     return;
-# ifdef YYPRINT
-  if (yykind < YYNTOKENS)
-    YYPRINT (yyo, yytoknum[yykind], *yyvaluep);
-# endif
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   YY_USE (yykind);
   YY_IGNORE_MAYBE_UNINITIALIZED_END
@@ -1123,6 +1110,7 @@ yyparse (void)
   YYDPRINTF ((stderr, "Starting parse\n"));
 
   yychar = YYEMPTY; /* Cause a token to be read.  */
+
   goto yysetstate;
 
 
@@ -1148,7 +1136,7 @@ yysetstate:
 
   if (yyss + yystacksize - 1 <= yyssp)
 #if !defined yyoverflow && !defined YYSTACK_RELOCATE
-    goto yyexhaustedlab;
+    YYNOMEM;
 #else
     {
       /* Get the current used size of the three stacks, in elements.  */
@@ -1176,7 +1164,7 @@ yysetstate:
 # else /* defined YYSTACK_RELOCATE */
       /* Extend the stack our own way.  */
       if (YYMAXDEPTH <= yystacksize)
-        goto yyexhaustedlab;
+        YYNOMEM;
       yystacksize *= 2;
       if (YYMAXDEPTH < yystacksize)
         yystacksize = YYMAXDEPTH;
@@ -1187,7 +1175,7 @@ yysetstate:
           YY_CAST (union yyalloc *,
                    YYSTACK_ALLOC (YY_CAST (YYSIZE_T, YYSTACK_BYTES (yystacksize))));
         if (! yyptr)
-          goto yyexhaustedlab;
+          YYNOMEM;
         YYSTACK_RELOCATE (yyss_alloc, yyss);
         YYSTACK_RELOCATE (yyvs_alloc, yyvs);
 #  undef YYSTACK_RELOCATE
@@ -1208,6 +1196,7 @@ yysetstate:
         YYABORT;
     }
 #endif /* !defined yyoverflow && !defined YYSTACK_RELOCATE */
+
 
   if (yystate == YYFINAL)
     YYACCEPT;
@@ -1331,7 +1320,7 @@ yyreduce:
 			YYERROR;
 		}
 	}
-#line 1335 "ginsh_parser.cpp"
+#line 1324 "ginsh_parser.cpp"
     break;
 
   case 6: /* line: exp ':'  */
@@ -1344,7 +1333,7 @@ yyreduce:
 			YYERROR;
 		}
 	}
-#line 1348 "ginsh_parser.cpp"
+#line 1337 "ginsh_parser.cpp"
     break;
 
   case 7: /* line: T_PRINT '(' exp ')' ';'  */
@@ -1357,7 +1346,7 @@ yyreduce:
 			YYERROR;
 		}
 	}
-#line 1361 "ginsh_parser.cpp"
+#line 1350 "ginsh_parser.cpp"
     break;
 
   case 8: /* line: T_IPRINT '(' exp ')' ';'  */
@@ -1376,7 +1365,7 @@ yyreduce:
 			YYERROR;
 		}
 	}
-#line 1380 "ginsh_parser.cpp"
+#line 1369 "ginsh_parser.cpp"
     break;
 
   case 9: /* line: T_PRINTLATEX '(' exp ')' ';'  */
@@ -1389,7 +1378,7 @@ yyreduce:
 			YYERROR;
 		}
 	}
-#line 1393 "ginsh_parser.cpp"
+#line 1382 "ginsh_parser.cpp"
     break;
 
   case 10: /* line: T_PRINTCSRC '(' exp ')' ';'  */
@@ -1402,55 +1391,55 @@ yyreduce:
 			YYERROR;
 		}
 	}
-#line 1406 "ginsh_parser.cpp"
+#line 1395 "ginsh_parser.cpp"
     break;
 
   case 11: /* line: '?' T_SYMBOL  */
 #line 206 "ginsh_parser.ypp"
                                 {print_help(ex_to<symbol>(yyvsp[0]).get_name());}
-#line 1412 "ginsh_parser.cpp"
+#line 1401 "ginsh_parser.cpp"
     break;
 
   case 12: /* line: '?' T_TIME  */
 #line 207 "ginsh_parser.ypp"
                                 {print_help("time");}
-#line 1418 "ginsh_parser.cpp"
+#line 1407 "ginsh_parser.cpp"
     break;
 
   case 13: /* line: '?' T_PRINT  */
 #line 208 "ginsh_parser.ypp"
                                 {print_help("print");}
-#line 1424 "ginsh_parser.cpp"
+#line 1413 "ginsh_parser.cpp"
     break;
 
   case 14: /* line: '?' T_IPRINT  */
 #line 209 "ginsh_parser.ypp"
                                 {print_help("iprint");}
-#line 1430 "ginsh_parser.cpp"
+#line 1419 "ginsh_parser.cpp"
     break;
 
   case 15: /* line: '?' T_PRINTLATEX  */
 #line 210 "ginsh_parser.ypp"
                                 {print_help("print_latex");}
-#line 1436 "ginsh_parser.cpp"
+#line 1425 "ginsh_parser.cpp"
     break;
 
   case 16: /* line: '?' T_PRINTCSRC  */
 #line 211 "ginsh_parser.ypp"
                                 {print_help("print_csrc");}
-#line 1442 "ginsh_parser.cpp"
+#line 1431 "ginsh_parser.cpp"
     break;
 
   case 17: /* line: '?' '?'  */
 #line 212 "ginsh_parser.ypp"
                                 {print_help_topics();}
-#line 1448 "ginsh_parser.cpp"
+#line 1437 "ginsh_parser.cpp"
     break;
 
   case 18: /* line: T_QUIT  */
 #line 213 "ginsh_parser.ypp"
                                 {YYACCEPT;}
-#line 1454 "ginsh_parser.cpp"
+#line 1443 "ginsh_parser.cpp"
     break;
 
   case 19: /* line: T_WARRANTY  */
@@ -1468,25 +1457,25 @@ yyreduce:
 		cout << "this program. If not, write to the Free Software Foundation,\n";
 		cout << "51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.\n";
 	}
-#line 1472 "ginsh_parser.cpp"
+#line 1461 "ginsh_parser.cpp"
     break;
 
   case 20: /* line: T_XYZZY  */
 #line 227 "ginsh_parser.ypp"
                                 {cout << "Nothing happens.\n";}
-#line 1478 "ginsh_parser.cpp"
+#line 1467 "ginsh_parser.cpp"
     break;
 
   case 21: /* line: T_INVENTORY  */
 #line 228 "ginsh_parser.ypp"
                                 {cout << "You're not carrying anything.\n";}
-#line 1484 "ginsh_parser.cpp"
+#line 1473 "ginsh_parser.cpp"
     break;
 
   case 22: /* line: T_LOOK  */
 #line 229 "ginsh_parser.ypp"
                                 {cout << "You're in a twisty little maze of passages, all alike.\n";}
-#line 1490 "ginsh_parser.cpp"
+#line 1479 "ginsh_parser.cpp"
     break;
 
   case 23: /* line: T_SCORE  */
@@ -1496,49 +1485,49 @@ yyreduce:
 		cout << (syms.size() > 350 ? 350 : syms.size());
 		cout << " out of a possible 350.\n";
 	}
-#line 1500 "ginsh_parser.cpp"
+#line 1489 "ginsh_parser.cpp"
     break;
 
   case 24: /* line: T_REAL_SYMBOLS  */
 #line 235 "ginsh_parser.ypp"
                          { symboltype = domain::real; }
-#line 1506 "ginsh_parser.cpp"
+#line 1495 "ginsh_parser.cpp"
     break;
 
   case 25: /* line: T_COMPLEX_SYMBOLS  */
 #line 236 "ginsh_parser.ypp"
                             { symboltype = domain::complex; }
-#line 1512 "ginsh_parser.cpp"
+#line 1501 "ginsh_parser.cpp"
     break;
 
   case 26: /* $@1: %empty  */
 #line 237 "ginsh_parser.ypp"
                  { START_TIMER }
-#line 1518 "ginsh_parser.cpp"
+#line 1507 "ginsh_parser.cpp"
     break;
 
   case 27: /* line: T_TIME $@1 '(' exp ')'  */
 #line 237 "ginsh_parser.ypp"
                                              { STOP_TIMER PRINT_TIME_USED }
-#line 1524 "ginsh_parser.cpp"
+#line 1513 "ginsh_parser.cpp"
     break;
 
   case 28: /* line: error ';'  */
 #line 238 "ginsh_parser.ypp"
                                 {yyclearin; yyerrok;}
-#line 1530 "ginsh_parser.cpp"
+#line 1519 "ginsh_parser.cpp"
     break;
 
   case 29: /* line: error ':'  */
 #line 239 "ginsh_parser.ypp"
                                 {yyclearin; yyerrok;}
-#line 1536 "ginsh_parser.cpp"
+#line 1525 "ginsh_parser.cpp"
     break;
 
   case 30: /* exp: T_NUMBER  */
 #line 242 "ginsh_parser.ypp"
                                 {yyval = yyvsp[0];}
-#line 1542 "ginsh_parser.cpp"
+#line 1531 "ginsh_parser.cpp"
     break;
 
   case 31: /* exp: T_SYMBOL  */
@@ -1550,43 +1539,43 @@ yyreduce:
 		else
 			yyval = i->second;
 	}
-#line 1554 "ginsh_parser.cpp"
+#line 1543 "ginsh_parser.cpp"
     break;
 
   case 32: /* exp: '\'' T_SYMBOL '\''  */
 #line 250 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-1];}
-#line 1560 "ginsh_parser.cpp"
+#line 1549 "ginsh_parser.cpp"
     break;
 
   case 33: /* exp: T_LITERAL  */
 #line 251 "ginsh_parser.ypp"
                                 {yyval = yyvsp[0];}
-#line 1566 "ginsh_parser.cpp"
+#line 1555 "ginsh_parser.cpp"
     break;
 
   case 34: /* exp: T_DIGITS  */
 #line 252 "ginsh_parser.ypp"
                                 {yyval = yyvsp[0];}
-#line 1572 "ginsh_parser.cpp"
+#line 1561 "ginsh_parser.cpp"
     break;
 
   case 35: /* exp: T_QUOTE  */
 #line 253 "ginsh_parser.ypp"
                                 {yyval = exstack[0];}
-#line 1578 "ginsh_parser.cpp"
+#line 1567 "ginsh_parser.cpp"
     break;
 
   case 36: /* exp: T_QUOTE2  */
 #line 254 "ginsh_parser.ypp"
                                 {yyval = exstack[1];}
-#line 1584 "ginsh_parser.cpp"
+#line 1573 "ginsh_parser.cpp"
     break;
 
   case 37: /* exp: T_QUOTE3  */
 #line 255 "ginsh_parser.ypp"
                                 {yyval = exstack[2];}
-#line 1590 "ginsh_parser.cpp"
+#line 1579 "ginsh_parser.cpp"
     break;
 
   case 38: /* exp: T_SYMBOL '(' exprseq ')'  */
@@ -1599,185 +1588,185 @@ yyreduce:
 			yyval = (i->second.p)(ex_to<exprseq>(yyvsp[-1]));
 		}
 	}
-#line 1603 "ginsh_parser.cpp"
+#line 1592 "ginsh_parser.cpp"
     break;
 
   case 39: /* exp: T_DIGITS '=' T_NUMBER  */
 #line 264 "ginsh_parser.ypp"
                                 {yyval = yyvsp[0]; Digits = ex_to<numeric>(yyvsp[0]).to_int();}
-#line 1609 "ginsh_parser.cpp"
+#line 1598 "ginsh_parser.cpp"
     break;
 
   case 40: /* exp: T_SYMBOL '=' exp  */
 #line 265 "ginsh_parser.ypp"
                                 {yyval = yyvsp[0]; assigned_symbol_table[yyvsp[-2]] = yyvsp[0]; }
-#line 1615 "ginsh_parser.cpp"
+#line 1604 "ginsh_parser.cpp"
     break;
 
   case 41: /* exp: exp T_EQUAL exp  */
 #line 266 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-2] == yyvsp[0];}
-#line 1621 "ginsh_parser.cpp"
+#line 1610 "ginsh_parser.cpp"
     break;
 
   case 42: /* exp: exp T_NOTEQ exp  */
 #line 267 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-2] != yyvsp[0];}
-#line 1627 "ginsh_parser.cpp"
+#line 1616 "ginsh_parser.cpp"
     break;
 
   case 43: /* exp: exp '<' exp  */
 #line 268 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-2] < yyvsp[0];}
-#line 1633 "ginsh_parser.cpp"
+#line 1622 "ginsh_parser.cpp"
     break;
 
   case 44: /* exp: exp T_LESSEQ exp  */
 #line 269 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-2] <= yyvsp[0];}
-#line 1639 "ginsh_parser.cpp"
+#line 1628 "ginsh_parser.cpp"
     break;
 
   case 45: /* exp: exp '>' exp  */
 #line 270 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-2] > yyvsp[0];}
-#line 1645 "ginsh_parser.cpp"
+#line 1634 "ginsh_parser.cpp"
     break;
 
   case 46: /* exp: exp T_GREATEREQ exp  */
 #line 271 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-2] >= yyvsp[0];}
-#line 1651 "ginsh_parser.cpp"
+#line 1640 "ginsh_parser.cpp"
     break;
 
   case 47: /* exp: exp '+' exp  */
 #line 272 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-2] + yyvsp[0];}
-#line 1657 "ginsh_parser.cpp"
+#line 1646 "ginsh_parser.cpp"
     break;
 
   case 48: /* exp: exp '-' exp  */
 #line 273 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-2] - yyvsp[0];}
-#line 1663 "ginsh_parser.cpp"
+#line 1652 "ginsh_parser.cpp"
     break;
 
   case 49: /* exp: exp '*' exp  */
 #line 274 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-2] * yyvsp[0];}
-#line 1669 "ginsh_parser.cpp"
+#line 1658 "ginsh_parser.cpp"
     break;
 
   case 50: /* exp: exp '/' exp  */
 #line 275 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-2] / yyvsp[0];}
-#line 1675 "ginsh_parser.cpp"
+#line 1664 "ginsh_parser.cpp"
     break;
 
   case 51: /* exp: '-' exp  */
 #line 276 "ginsh_parser.ypp"
                                 {yyval = -yyvsp[0];}
-#line 1681 "ginsh_parser.cpp"
+#line 1670 "ginsh_parser.cpp"
     break;
 
   case 52: /* exp: '+' exp  */
 #line 277 "ginsh_parser.ypp"
                                 {yyval = yyvsp[0];}
-#line 1687 "ginsh_parser.cpp"
+#line 1676 "ginsh_parser.cpp"
     break;
 
   case 53: /* exp: exp '^' exp  */
 #line 278 "ginsh_parser.ypp"
                                 {yyval = power(yyvsp[-2], yyvsp[0]);}
-#line 1693 "ginsh_parser.cpp"
+#line 1682 "ginsh_parser.cpp"
     break;
 
   case 54: /* exp: exp '!'  */
 #line 279 "ginsh_parser.ypp"
                                 {yyval = factorial(yyvsp[-1]);}
-#line 1699 "ginsh_parser.cpp"
+#line 1688 "ginsh_parser.cpp"
     break;
 
   case 55: /* exp: '(' exp ')'  */
 #line 280 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-1];}
-#line 1705 "ginsh_parser.cpp"
+#line 1694 "ginsh_parser.cpp"
     break;
 
   case 56: /* exp: '{' list_or_empty '}'  */
 #line 281 "ginsh_parser.ypp"
                                 {yyval = yyvsp[-1];}
-#line 1711 "ginsh_parser.cpp"
+#line 1700 "ginsh_parser.cpp"
     break;
 
   case 57: /* exp: '[' matrix ']'  */
 #line 282 "ginsh_parser.ypp"
                                 {yyval = lst_to_matrix(ex_to<lst>(yyvsp[-1]));}
-#line 1717 "ginsh_parser.cpp"
+#line 1706 "ginsh_parser.cpp"
     break;
 
   case 58: /* exprseq: exp  */
 #line 285 "ginsh_parser.ypp"
                                 {yyval = exprseq{yyvsp[0]};}
-#line 1723 "ginsh_parser.cpp"
+#line 1712 "ginsh_parser.cpp"
     break;
 
   case 59: /* exprseq: exprseq ',' exp  */
 #line 286 "ginsh_parser.ypp"
                                 {exprseq es(ex_to<exprseq>(yyvsp[-2])); yyval = es.append(yyvsp[0]);}
-#line 1729 "ginsh_parser.cpp"
+#line 1718 "ginsh_parser.cpp"
     break;
 
   case 60: /* list_or_empty: %empty  */
 #line 289 "ginsh_parser.ypp"
                                 {yyval = *new lst;}
-#line 1735 "ginsh_parser.cpp"
+#line 1724 "ginsh_parser.cpp"
     break;
 
   case 61: /* list_or_empty: list  */
 #line 290 "ginsh_parser.ypp"
                                 {yyval = yyvsp[0];}
-#line 1741 "ginsh_parser.cpp"
+#line 1730 "ginsh_parser.cpp"
     break;
 
   case 62: /* list: exp  */
 #line 293 "ginsh_parser.ypp"
                                 {yyval = lst{yyvsp[0]};}
-#line 1747 "ginsh_parser.cpp"
+#line 1736 "ginsh_parser.cpp"
     break;
 
   case 63: /* list: list ',' exp  */
 #line 294 "ginsh_parser.ypp"
                                 {lst l(ex_to<lst>(yyvsp[-2])); yyval = l.append(yyvsp[0]);}
-#line 1753 "ginsh_parser.cpp"
+#line 1742 "ginsh_parser.cpp"
     break;
 
   case 64: /* matrix: '[' row ']'  */
 #line 297 "ginsh_parser.ypp"
                                 {yyval = lst{yyvsp[-1]};}
-#line 1759 "ginsh_parser.cpp"
+#line 1748 "ginsh_parser.cpp"
     break;
 
   case 65: /* matrix: matrix ',' '[' row ']'  */
 #line 298 "ginsh_parser.ypp"
                                  {lst l(ex_to<lst>(yyvsp[-4])); yyval = l.append(yyvsp[-1]);}
-#line 1765 "ginsh_parser.cpp"
+#line 1754 "ginsh_parser.cpp"
     break;
 
   case 66: /* row: exp  */
 #line 301 "ginsh_parser.ypp"
                                 {yyval = lst{yyvsp[0]};}
-#line 1771 "ginsh_parser.cpp"
+#line 1760 "ginsh_parser.cpp"
     break;
 
   case 67: /* row: row ',' exp  */
 #line 302 "ginsh_parser.ypp"
                                 {lst l(ex_to<lst>(yyvsp[-2])); yyval = l.append(yyvsp[0]);}
-#line 1777 "ginsh_parser.cpp"
+#line 1766 "ginsh_parser.cpp"
     break;
 
 
-#line 1781 "ginsh_parser.cpp"
+#line 1770 "ginsh_parser.cpp"
 
       default: break;
     }
@@ -1859,6 +1848,7 @@ yyerrorlab:
      label yyerrorlab therefore never appears in user code.  */
   if (0)
     YYERROR;
+  ++yynerrs;
 
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYERROR.  */
@@ -1919,7 +1909,7 @@ yyerrlab1:
 `-------------------------------------*/
 yyacceptlab:
   yyresult = 0;
-  goto yyreturn;
+  goto yyreturnlab;
 
 
 /*-----------------------------------.
@@ -1927,24 +1917,22 @@ yyacceptlab:
 `-----------------------------------*/
 yyabortlab:
   yyresult = 1;
-  goto yyreturn;
+  goto yyreturnlab;
 
 
-#if !defined yyoverflow
-/*-------------------------------------------------.
-| yyexhaustedlab -- memory exhaustion comes here.  |
-`-------------------------------------------------*/
+/*-----------------------------------------------------------.
+| yyexhaustedlab -- YYNOMEM (memory exhaustion) comes here.  |
+`-----------------------------------------------------------*/
 yyexhaustedlab:
   yyerror (YY_("memory exhausted"));
   yyresult = 2;
-  goto yyreturn;
-#endif
+  goto yyreturnlab;
 
 
-/*-------------------------------------------------------.
-| yyreturn -- parsing is finished, clean up and return.  |
-`-------------------------------------------------------*/
-yyreturn:
+/*----------------------------------------------------------.
+| yyreturnlab -- parsing is finished, clean up and return.  |
+`----------------------------------------------------------*/
+yyreturnlab:
   if (yychar != YYEMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at
@@ -2665,7 +2653,7 @@ static void ginsh_readline_init(char* name)
 void greeting(void)
 {
     cout << "ginsh - GiNaC Interactive Shell (GiNaC V" << GINACLIB_VERSION << ")" << endl;
-    cout << "  __,  _______  Copyright (C) 1999-2021 Johannes Gutenberg University Mainz,\n"
+    cout << "  __,  _______  Copyright (C) 1999-2022 Johannes Gutenberg University Mainz,\n"
          << " (__) *       | Germany.  This is free software with ABSOLUTELY NO WARRANTY.\n"
          << "  ._) i N a C | You are welcome to redistribute it under certain conditions.\n"
          << "<-------------' For details type `warranty;'.\n" << endl;

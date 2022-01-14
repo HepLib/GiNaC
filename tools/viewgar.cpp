@@ -3,7 +3,7 @@
  *  GiNaC archive file viewer. */
 
 /*
- *  GiNaC Copyright (C) 1999-2021 Johannes Gutenberg University Mainz, Germany
+ *  GiNaC Copyright (C) 1999-2022 Johannes Gutenberg University Mainz, Germany
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@ int main(int argc, char **argv)
 
 	bool dump_mode = false;
 	try {
-		lst l;
 		while (argc) {
 			if (strcmp(*argv, "-d") == 0) {
 				dump_mode = true;
@@ -54,7 +53,7 @@ int main(int argc, char **argv)
 			} else {
 				for (unsigned int i=0; i<ar.num_expressions(); ++i) {
 					std::string name;
-					ex e = ar.unarchive_ex(l, name, i);
+					ex e = ar.unarchive_ex(name, i);
 					std::cout << name << " = " << e << std::endl;
 				}
 			}

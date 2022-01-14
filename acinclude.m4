@@ -22,48 +22,6 @@ define(GINAC_GET_VERSION,
 define(GINAC_GET_LTVERSION,
 [GINAC_HEADER_GETVAL(GINAC_LT_$1,[ginac/version.h])])
 
-dnl Usage: GINAC_STD_CXX_HEADERS
-dnl Check for standard C++ headers, bail out if something is missing.
-AC_DEFUN([GINAC_STD_CXX_HEADERS], [
-AC_CACHE_CHECK([for standard C++ header files], [ginac_cv_std_cxx_headers], [
-	ginac_cv_std_cxx_headers="no"
-	AC_LANG_PUSH([C++])
-	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-		#include <algorithm>
-		#include <cstddef>
-		#include <cstdio>
-		#include <cstdlib>
-		#include <cstring>
-		#include <cstdint>
-		#include <ctime>
-		#include <fstream>
-		#include <functional>
-		#include <iomanip>
-		#include <ios>
-		#include <iosfwd>
-		#include <iostream>
-		#include <iterator>
-		#include <limits>
-		#include <list>
-		#include <map>
-		#include <memory>
-		#include <numeric>
-		#include <ostream>
-		#include <set>
-		#include <sstream>
-		#include <stack>
-		#include <stdexcept>
-		#include <string>
-		#include <typeinfo>
-		#include <utility>
-		#include <vector>
-		]])], [ginac_cv_std_cxx_headers="yes"])
-	AC_LANG_POP([C++])])
-if test "${ginac_cv_std_cxx_headers}" != "yes"; then
-	AC_MSG_ERROR([Standard ISO C++ headers are missing])
-fi
-])
-
 dnl Usage: GINAC_LIBREADLINE
 dnl
 dnl Check if GNU readline library and headers are avialable.
@@ -181,13 +139,13 @@ fi])
 AC_DEFUN([GINAC_HAVE_RUSAGE],
 [AC_CACHE_CHECK([whether struct rusage is declared in <sys/resource.h>],
 ac_cv_have_rusage,
- [AC_TRY_COMPILE([#include <sys/times.h>
-                  #include <sys/resource.h>],
-                  [struct rusage resUsage;
-                   getrusage(RUSAGE_SELF, &resUsage);
-                   return 0;],
-                 [ac_cv_have_rusage=yes],
-                 [ac_cv_have_rusage=no])
+ [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/times.h>
+                                       #include <sys/resource.h>]],
+                                     [[struct rusage resUsage;
+                                       getrusage(RUSAGE_SELF, &resUsage);
+                                       return 0;]])],
+                    [ac_cv_have_rusage=yes],
+                    [ac_cv_have_rusage=no])
 ])
 CONFIG_RUSAGE="no"
 if test "$ac_cv_have_rusage" = yes; then

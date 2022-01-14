@@ -24,7 +24,7 @@
 This is a tutorial that documents GiNaC @value{VERSION}, an open
 framework for symbolic computation within the C++ programming language.
 
-Copyright (C) 1999-2021 Johannes Gutenberg University Mainz, Germany
+Copyright (C) 1999-2022 Johannes Gutenberg University Mainz, Germany
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -52,7 +52,7 @@ notice identical to this one.
 
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1999-2021 Johannes Gutenberg University Mainz, Germany
+Copyright @copyright{} 1999-2022 Johannes Gutenberg University Mainz, Germany
 @sp 2
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -8018,10 +8018,10 @@ void sprod::archive(archive_node & n) const
     n.add_ex("right", get_struct().right);
 @}
 
-sprod::structure(const archive_node & n, lst & sym_lst) : inherited(n, sym_lst)
+sprod::structure(const archive_node & n) : inherited(n)
 @{
-    n.find_ex("left", get_struct().left, sym_lst);
-    n.find_ex("right", get_struct().right, sym_lst);
+    n.find_ex("left", get_struct().left);
+    n.find_ex("right", get_struct().right);
 @}
 @end example
 

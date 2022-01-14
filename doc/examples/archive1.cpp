@@ -39,8 +39,8 @@ int main()
 
 	lst syms = {x, y};
 
-	ex ex1 = a2.unarchive_ex(syms, "foo");
-	ex ex2 = a2.unarchive_ex(syms, "the second one");
+	ex ex1 = a2.unarchive_ex("foo");
+	ex ex2 = a2.unarchive_ex("the second one");
 
 	// do some math again
 	

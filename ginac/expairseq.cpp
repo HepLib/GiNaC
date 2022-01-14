@@ -3,7 +3,7 @@
  *  Implementation of sequences of expression pairs. */
 
 /*
- *  GiNaC Copyright (C) 1999-2021 Johannes Gutenberg University Mainz, Germany
+ *  GiNaC Copyright (C) 1999-2022 Johannes Gutenberg University Mainz, Germany
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -127,8 +127,7 @@ void expairseq::read_archive(const archive_node &n)
 		n.find_ex_by_loc(loc++, coeff);
 		seq.emplace_back(expair(rest, coeff));
 	}
-    seq.shrink_to_fit();
-    
+
 	n.find_ex("overall_coeff", overall_coeff);
 
 	canonicalize();
@@ -621,7 +620,7 @@ void expairseq::construct_from_2_ex(const ex &lh, const ex &rh)
 			}
 			else
 				construct_from_2_expairseq(ex_to<expairseq>(lh),
-				                           ex_to<expairseq>(rh));       
+				                           ex_to<expairseq>(rh));
 			return;
 		} else {
 			construct_from_expairseq_ex(ex_to<expairseq>(lh), rh);
@@ -715,8 +714,6 @@ void expairseq::construct_from_2_expairseq(const expairseq &s1,
 		seq.push_back(*first2);
 		++first2;
 	}
- 
-    seq.shrink_to_fit();
 	
 	if (needs_further_processing) {
 		// Clear seq and start over.
@@ -778,8 +775,6 @@ void expairseq::construct_from_expairseq_ex(const expairseq &s,
 		// while loop exited because s.seq was pushed, now push p
 		seq.push_back(p);
 	}
- 
-    seq.shrink_to_fit();
 
 	if (needs_further_processing) {
 		// Clear seq and start over.
@@ -867,7 +862,6 @@ void expairseq::make_flat(const exvector &v)
 			}
 		}
 	}
-    seq.shrink_to_fit();   
 }
 
 /** Combine this expairseq with argument epvector.
@@ -920,7 +914,6 @@ void expairseq::make_flat(const epvector &v, bool do_index_renaming)
 			}
 		}
 	}
-    seq.shrink_to_fit();
 }
 
 /** Brings this expairseq into a sorted (canonical) form. */

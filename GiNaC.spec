@@ -1,5 +1,5 @@
 %define name ginac
-%define version 1.8.1
+%define version 1.8.2
 %define release 1
 
 Summary: C++ library for symbolic calculations

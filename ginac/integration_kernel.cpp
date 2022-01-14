@@ -3,7 +3,7 @@
  *  Implementation of GiNaC's integration kernels for iterated integrals. */
 
 /*
- *  GiNaC Copyright (C) 1999-2021 Johannes Gutenberg University Mainz, Germany
+ *  GiNaC Copyright (C) 1999-2022 Johannes Gutenberg University Mainz, Germany
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1963,6 +1963,8 @@ ex modular_form_kernel::series(const relational & r, int order, unsigned options
 	subs_q_expansion do_subs_q_expansion(qbar, order);
 
 	ex res = do_subs_q_expansion(P).series(qbar,order);
+	res += Order(pow(qbar,order));
+	res = res.series(qbar,order);
 
 	return res;
 }

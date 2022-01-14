@@ -3,7 +3,7 @@
  *  GiNaC library version information. */
 
 /*
- *  GiNaC Copyright (C) 1999-2021 Johannes Gutenberg University Mainz, Germany
+ *  GiNaC Copyright (C) 1999-2022 Johannes Gutenberg University Mainz, Germany
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #define GINACLIB_MINOR_VERSION 8
 
 /* Micro version of GiNaC */
-#define GINACLIB_MICRO_VERSION 1
+#define GINACLIB_MICRO_VERSION 2
 
 // GiNaC library version information. It has very little to do with GiNaC
 // version number. In particular, library version is OS dependent. 
@@ -56,7 +56,7 @@
 //  * change matrix inverse to use default argument (twice)
 //  * check for interfaces marked as deprecated
 #define GINAC_LT_CURRENT  12
-#define GINAC_LT_REVISION 0
+#define GINAC_LT_REVISION 1
 #define GINAC_LT_AGE      1
 
 /*
