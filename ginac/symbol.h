@@ -108,6 +108,7 @@ public:
 	ex conjugate() const override { return *this; }
 	ex real_part() const override { return *this; }
 	ex imag_part() const override { return 0; }
+    ex derivative(const symbol & s) const override;
 
 	realsymbol* duplicate() const override
 	{
@@ -128,6 +129,7 @@ public:
 	possymbol(const std::string & initname, const std::string & texname);
 
 	unsigned get_domain() const override { return domain::positive; }
+    ex derivative(const symbol & s) const override;
 
 	possymbol* duplicate() const override
 	{

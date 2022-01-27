@@ -353,6 +353,18 @@ static const std::string& get_default_TeX_name(const std::string& name)
 		return name;
 }
 
+    ex realsymbol::derivative(const symbol & s) const { 
+        if(!is_exactly_a<realsymbol>(s)) return 0;
+        if(is_equal_same_type(s)) return 1;
+        else return 0;
+    }
+
+    ex possymbol::derivative(const symbol & s) const { 
+        if(!is_exactly_a<possymbol>(s)) return 0;
+        if(is_equal_same_type(s)) return 1;
+        else return 0;
+    }
+
 GINAC_BIND_UNARCHIVER(symbol);
 GINAC_BIND_UNARCHIVER(realsymbol);
 GINAC_BIND_UNARCHIVER(possymbol);
