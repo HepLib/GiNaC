@@ -209,7 +209,6 @@ public:
 		is_positive	= 0x0080,
 		is_negative	= 0x0100,
 		purely_indefinite = 0x0200  // If set in a mul, then it does not contains any terms with determined signs, used in power::expand()
-        ,hf_expanded = 0x0400
 	};
 };
 

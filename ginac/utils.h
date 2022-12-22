@@ -604,7 +604,7 @@ extern const ex _ex120;
 // Helper macros for class implementations (mostly useful for trivial classes)
 
 #define DEFAULT_CTOR(classname) \
-classname::classname() { setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded); }
+classname::classname() { setflag(status_flags::evaluated | status_flags::expanded); }
 
 #define DEFAULT_COMPARE(classname) \
 int classname::compare_same_type(const basic & other) const \

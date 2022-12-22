@@ -32,7 +32,9 @@ namespace GiNaC {
 typedef container<std::list> lst;
 
 /** Declaration of container::reg_info for lst. */
+#ifndef _MSC_VER  // workaround error C2766: explicit specialization; 'reg_info' has already been defined
 template<> registered_class_info lst::reg_info;
+#endif
 
 /** Specialization of container::get_default_flags() for lst. */
 template<> inline unsigned lst::get_default_flags() { return status_flags::not_shareable; }

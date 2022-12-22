@@ -367,7 +367,7 @@ static unsigned matrix_misc()
 	bool caught = false;
 	try {
 		m5 = inverse(m4);
-	} catch (std::runtime_error err) {
+	} catch (std::runtime_error &err) {
 		caught = true;
 	}
 	if (!caught) {

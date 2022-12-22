@@ -47,7 +47,7 @@ GINAC_IMPLEMENT_REGISTERED_CLASS_OPT(constant, basic,
 
 constant::constant() : ef(nullptr), serial(next_serial++), domain(domain::complex)
 {
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 //////////
@@ -63,7 +63,7 @@ constant::constant(const std::string & initname, evalffunctype efun, const std::
 		TeX_name = "\\mathrm{" + name + "}";
 	else
 		TeX_name = texname;
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 constant::constant(const std::string & initname, const numeric & initnumber, const std::string & texname, unsigned dm)
@@ -73,7 +73,7 @@ constant::constant(const std::string & initname, const numeric & initnumber, con
 		TeX_name = "\\mathrm{" + name + "}";
 	else
 		TeX_name = texname;
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 //////////

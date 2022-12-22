@@ -146,8 +146,24 @@ static ex exp_power(const ex & x, const ex & a)
 	return power(exp(x), a).hold();
 }
 
+static bool exp_info(const ex & x, unsigned inf)
+{
+	switch (inf) {
+	case info_flags::numeric:
+	case info_flags::expanded:
+	case info_flags::real:
+		return x.info(inf);
+	case info_flags::positive:
+	case info_flags::nonnegative:
+		return x.info(info_flags::real);
+	default:
+		return false;
+	}
+}
+
 REGISTER_FUNCTION(exp, eval_func(exp_eval).
                        evalf_func(exp_evalf).
+                       info_func(exp_info).
                        expand_func(exp_expand).
                        derivative_func(exp_deriv).
                        real_part_func(exp_real_part).
@@ -370,8 +386,22 @@ static ex log_conjugate(const ex & x)
 	return conjugate_function(log(x)).hold();
 }
 
+static bool log_info(const ex & x, unsigned inf)
+{
+	switch (inf) {
+	case info_flags::numeric:
+	case info_flags::expanded:
+		return x.info(inf);
+	case info_flags::real:
+		return x.info(info_flags::positive);
+	default:
+		return false;
+	}
+}
+
 REGISTER_FUNCTION(log, eval_func(log_eval).
                        evalf_func(log_evalf).
+                       info_func(log_info).
                        expand_func(log_expand).
                        derivative_func(log_deriv).
                        series_func(log_series).
@@ -479,8 +509,21 @@ static ex sin_conjugate(const ex & x)
 	return sin(x.conjugate());
 }
 
+static bool trig_info(const ex & x, unsigned inf)
+{
+	switch (inf) {
+	case info_flags::numeric:
+	case info_flags::expanded:
+	case info_flags::real:
+		return x.info(inf);
+	default:
+		return false;
+	}
+}
+
 REGISTER_FUNCTION(sin, eval_func(sin_eval).
                        evalf_func(sin_evalf).
+                       info_func(trig_info).
                        derivative_func(sin_deriv).
                        real_part_func(sin_real_part).
                        imag_part_func(sin_imag_part).
@@ -587,6 +630,7 @@ static ex cos_conjugate(const ex & x)
 }
 
 REGISTER_FUNCTION(cos, eval_func(cos_eval).
+                       info_func(trig_info).
                        evalf_func(cos_evalf).
                        derivative_func(cos_deriv).
                        real_part_func(cos_real_part).
@@ -712,6 +756,7 @@ static ex tan_conjugate(const ex & x)
 
 REGISTER_FUNCTION(tan, eval_func(tan_eval).
                        evalf_func(tan_evalf).
+                       info_func(trig_info).
                        derivative_func(tan_deriv).
                        series_func(tan_series).
                        real_part_func(tan_real_part).
@@ -786,8 +831,20 @@ static ex asin_conjugate(const ex & x)
 	return conjugate_function(asin(x)).hold();
 }
 
+static bool asin_info(const ex & x, unsigned inf)
+{
+	switch (inf) {
+	case info_flags::numeric:
+	case info_flags::expanded:
+		return x.info(inf);
+	default:
+		return false;
+	}
+}
+
 REGISTER_FUNCTION(asin, eval_func(asin_eval).
                         evalf_func(asin_evalf).
+                        info_func(asin_info).
                         derivative_func(asin_deriv).
                         conjugate_func(asin_conjugate).
                         latex_name("\\arcsin"));
@@ -861,6 +918,7 @@ static ex acos_conjugate(const ex & x)
 
 REGISTER_FUNCTION(acos, eval_func(acos_eval).
                         evalf_func(acos_evalf).
+                        info_func(asin_info). // Flags of acos are shared with asin functions
                         derivative_func(acos_deriv).
                         conjugate_func(acos_conjugate).
                         latex_name("\\arccos"));
@@ -978,8 +1036,25 @@ static ex atan_conjugate(const ex & x)
 	return conjugate_function(atan(x)).hold();
 }
 
+static bool atan_info(const ex & x, unsigned inf)
+{
+	switch (inf) {
+	case info_flags::numeric:
+	case info_flags::expanded:
+	case info_flags::real:
+		return x.info(inf);
+	case info_flags::positive:
+	case info_flags::negative:
+	case info_flags::nonnegative:
+		return x.info(info_flags::real) && x.info(inf);
+	default:
+		return false;
+	}
+}
+
 REGISTER_FUNCTION(atan, eval_func(atan_eval).
                         evalf_func(atan_evalf).
+                        info_func(atan_info).
                         derivative_func(atan_deriv).
                         series_func(atan_series).
                         conjugate_func(atan_conjugate).
@@ -1080,7 +1155,26 @@ static ex atan2_deriv(const ex & y, const ex & x, unsigned deriv_param)
 	return -y*power(power(x,_ex2)+power(y,_ex2),_ex_1);
 }
 
+static bool atan2_info(const ex & y, const ex & x, unsigned inf)
+{
+	switch (inf) {
+	case info_flags::numeric:
+	case info_flags::expanded:
+	case info_flags::real:
+		return y.info(inf) && x.info(inf);
+	case info_flags::positive:
+	case info_flags::negative:
+	case info_flags::nonnegative:
+		return y.info(info_flags::real) && x.info(info_flags::real)
+			&& y.info(inf);
+	default:
+		return false;
+	}
+}
+
 REGISTER_FUNCTION(atan2, eval_func(atan2_eval).
+                         evalf_func(atan2_evalf).
+                         info_func(atan2_info).
                          evalf_func(atan2_evalf).
                          derivative_func(atan2_deriv));
 
@@ -1162,6 +1256,7 @@ static ex sinh_conjugate(const ex & x)
 
 REGISTER_FUNCTION(sinh, eval_func(sinh_eval).
                         evalf_func(sinh_evalf).
+                        info_func(atan_info). // Flags of sinh are shared with atan functions
                         derivative_func(sinh_deriv).
                         real_part_func(sinh_real_part).
                         imag_part_func(sinh_imag_part).
@@ -1246,6 +1341,7 @@ static ex cosh_conjugate(const ex & x)
 
 REGISTER_FUNCTION(cosh, eval_func(cosh_eval).
                         evalf_func(cosh_evalf).
+                        info_func(exp_info). // Flags of cosh are shared with exp functions
                         derivative_func(cosh_deriv).
                         real_part_func(cosh_real_part).
                         imag_part_func(cosh_imag_part).
@@ -1350,6 +1446,7 @@ static ex tanh_conjugate(const ex & x)
 
 REGISTER_FUNCTION(tanh, eval_func(tanh_eval).
                         evalf_func(tanh_evalf).
+                        info_func(atan_info). // Flags of tanh are shared with atan functions
                         derivative_func(tanh_deriv).
                         series_func(tanh_series).
                         real_part_func(tanh_real_part).
@@ -1415,6 +1512,7 @@ static ex asinh_conjugate(const ex & x)
 
 REGISTER_FUNCTION(asinh, eval_func(asinh_eval).
                          evalf_func(asinh_evalf).
+                         info_func(atan_info). // Flags of asinh are shared with atan functions
                          derivative_func(asinh_deriv).
                          conjugate_func(asinh_conjugate));
 
@@ -1479,6 +1577,7 @@ static ex acosh_conjugate(const ex & x)
 
 REGISTER_FUNCTION(acosh, eval_func(acosh_eval).
                          evalf_func(acosh_evalf).
+                         info_func(asin_info). // Flags of acosh are shared with asin functions
                          derivative_func(acosh_deriv).
                          conjugate_func(acosh_conjugate));
 
@@ -1585,6 +1684,7 @@ static ex atanh_conjugate(const ex & x)
 
 REGISTER_FUNCTION(atanh, eval_func(atanh_eval).
                          evalf_func(atanh_evalf).
+                         info_func(asin_info). // Flags of atanh are shared with asin functions
                          derivative_func(atanh_deriv).
                          series_func(atanh_series).
                          conjugate_func(atanh_conjugate));

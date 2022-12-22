@@ -192,6 +192,24 @@ static unsigned exam_subs()
 		++result;
 	}
 
+	// This used to fail in GiNaC 1.8.2 with subs_options::no_pattern
+	e1 = 1/x;
+	e2 = e1.subs(x == 1/x);
+	if (!e2.is_equal(x)) {
+		clog << "(1/x).subs(x==1/x) erroneously returned " << e2 << " instead of x" << endl;
+		++result;
+	}
+	e2 = e1.subs(x == 1/x, subs_options::no_pattern);
+	if (!e2.is_equal(x)) {
+		clog << "(1/x).subs(x==1/x, subs_options::no_pattern) erroneously returned " << e2 << " instead of x" << endl;
+		++result;
+	}
+	e2 = e1.subs(x == 1/x, subs_options::algebraic);
+	if (!e2.is_equal(x)) {
+		clog << "(1/x).subs(x==1/x, subs_options::algebraic) erroneously returned " << e2 << " instead of x" << endl;
+		++result;
+	}
+
 	return result;
 }
 

@@ -47,7 +47,7 @@ GINAC_IMPLEMENT_REGISTERED_CLASS_OPT(symbol, basic,
 
 symbol::symbol() : serial(next_serial++), name(""), TeX_name("")
 {
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 // realsymbol
@@ -69,18 +69,18 @@ possymbol::possymbol() : realsymbol() { }
 symbol::symbol(const std::string & initname) : serial(next_serial++),
 	name(initname), TeX_name("")
 {
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 symbol::symbol(const std::string & initname, unsigned s) : serial(s), name(initname), TeX_name("")
 {
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 symbol::symbol(const std::string & initname, const std::string & texname) :
 	serial(next_serial++), name(initname), TeX_name(texname)
 {
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 // realsymbol
@@ -113,7 +113,7 @@ void symbol::read_archive(const archive_node &n)
 	name = tmp_name;
 	if (!n.find_string("TeXname", TeX_name))
 		TeX_name = std::string("");
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 
 	setflag(status_flags::dynallocated);
 }
@@ -282,7 +282,7 @@ unsigned symbol::calchash() const
         return hashvalue;
     }
 	unsigned seed = make_hash_seed(typeid(*this));
-    hashvalue = golden_ratio_hash(seed ^ serial);
+	hashvalue = golden_ratio_hash(seed ^ serial);
 	setflag(status_flags::hash_calculated);
 	return hashvalue;
 }

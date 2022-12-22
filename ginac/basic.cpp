@@ -68,7 +68,7 @@ const basic & basic::operator=(const basic & other)
 		// The other object is of a derived class, so clear the flags as they
 		// might no longer apply (especially hash_calculated). Oh, and don't
 		// copy the tinfo_key: it is already set correctly for this object.
-		fl &= ~(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded | status_flags::hash_calculated);
+		fl &= ~(status_flags::evaluated | status_flags::expanded | status_flags::hash_calculated);
 	} else {
 		// The objects are of the exact same class, so copy the hash value.
 		hashvalue = other.hashvalue;
@@ -309,7 +309,7 @@ ex basic::map(map_function & f) const
 	}
 
 	if (copy) {
-		copy->clearflag(status_flags::hash_calculated | status_flags::expanded | status_flags::hf_expanded);
+		copy->clearflag(status_flags::hash_calculated | status_flags::expanded);
 		return *copy;
 	} else
 		return *this;
@@ -617,7 +617,7 @@ ex basic::subs(const exmap & m, unsigned options) const
 
 				// Something changed, clone the object
 				basic *copy = duplicate();
-				copy->clearflag(status_flags::hash_calculated | status_flags::expanded | status_flags::hf_expanded);
+				copy->clearflag(status_flags::hash_calculated | status_flags::expanded);
 
 				// Substitute the changed operand
 				copy->let_op(i++) = subsed_op;

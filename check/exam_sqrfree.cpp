@@ -197,7 +197,47 @@ unsigned exam_sqrfree()
 	return result;
 }
 
+unsigned exam_sqrfree_parfrac()
+{
+	symbol x("x");
+	// (expression, number of terms after partial fraction decomposition)
+	vector<pair<ex, unsigned>> exams = {
+		{ex("(x - 1) / (x^2*(x^2 + 2))", lst{x}), 3},
+		{ex("(1 - x^10) / x", lst{x}), 2},
+		{ex("(2*x^3 + x + 3) / ((x^2 + 1)^2)", lst{x}), 2},
+		{ex("1 / (x * (x+1)^2 * (x+2)^3)", lst{x}), 6},
+		{ex("(x*x + 3*x - 1) / (x^2*(x^2 + 2)^3)", lst{x}), 5},
+		{ex("(1 - x^10) / (x + 2)", lst{x}), 11},
+		{ex("(1 - x + 3*x^2) / (x^3 * (2+x)^2)", lst{x}), 5},
+		{ex("(1 - x) / (x^4 * (x - 2)^3)", lst{x}), 6},
+		{ex("(1 - 2*x + x^9) / (x^5 * (1 - x + x^2)^6)", lst{x}), 11}
+	};
+	unsigned result = 0;
+
+	cout << "\n"
+	     << "examining square-free partial fraction decomposition" << flush;
+	for (auto e: exams) {
+		ex e1 = e.first;
+		ex e2 = sqrfree_parfrac(e1, x);
+		if (e2.nops() != e.second ||
+		    !is_a<add>(e2) ||
+		    !normal(e1-e2).is_zero()) {
+			clog << "sqrfree_parfrac(" << e1 << ", " << x << ") erroneously returned "
+			     << e2 << endl;
+			++result;
+		}
+		cout << '.' << flush;
+	}
+
+	return result;
+}
+
 int main(int argc, char** argv)
 {
-	return exam_sqrfree();
+	unsigned result = 0;
+
+	result += exam_sqrfree();
+	result += exam_sqrfree_parfrac();
+
+	return result;
 }

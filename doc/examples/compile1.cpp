@@ -40,7 +40,7 @@ int main()
 
 	// First using compile_ex
 	{
-		double result;
+		double result = 0.0;
 		double point = 0.2;
 		start = clock();
 		for (int i=0; i<100000; ++i) {
@@ -58,7 +58,7 @@ int main()
 
 	// Then without compile_ex
 	{
-		ex result;
+		ex result = 0.0;
 		ex point = 0.2;
 		start = clock();
 		for (int i=0; i<100000; ++i) {

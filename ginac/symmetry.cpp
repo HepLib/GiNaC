@@ -60,7 +60,7 @@ GINAC_IMPLEMENT_REGISTERED_CLASS_OPT(symmetry, basic,
 
 symmetry::symmetry() :  type(none)
 {
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 //////////
@@ -70,13 +70,13 @@ symmetry::symmetry() :  type(none)
 symmetry::symmetry(unsigned i) :  type(none)
 {
 	indices.insert(i);
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 symmetry::symmetry(symmetry_type t, const symmetry &c1, const symmetry &c2) :  type(t)
 {
 	add(c1); add(c2);
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 //////////

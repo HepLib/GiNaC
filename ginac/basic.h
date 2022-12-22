@@ -190,7 +190,6 @@ public:
 	virtual ex coeff(const ex & s, int n = 1) const;
 
 	// expand/collect
-    //virtual ex expand(std::function<bool(const ex &)> hf) const; //TODO: add another expand funciton
 	virtual ex expand(unsigned options = 0) const;
 	virtual ex collect(const ex & s, bool distributed = false) const;
 

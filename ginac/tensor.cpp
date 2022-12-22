@@ -66,7 +66,7 @@ GINAC_IMPLEMENT_REGISTERED_CLASS_OPT(tensepsilon, tensor,
 
 tensor::tensor()
 {
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 DEFAULT_CTOR(tensdelta)

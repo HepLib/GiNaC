@@ -1099,7 +1099,7 @@ ex clifford_star_bar(const ex & e, bool do_bar, unsigned options)
 		ev.reserve(e1.nops());
 		cv.reserve(e1.nops());
 		// separate clifford and non-clifford entries
-		for (int i= 0; i < e1.nops(); ++i) {
+		for (size_t i= 0; i < e1.nops(); ++i) {
 			if (is_a<clifford>(e1.op(i)) && is_a<cliffordunit>(e1.op(i).op(0)))
 				cv.push_back(e1.op(i));
 			else
@@ -1281,7 +1281,7 @@ static ex get_clifford_comp(const ex & e, const ex & c, bool root=true)
 		bool found=false, same_value_found=false;
 		ex dummy_ind=0;
 		ev.reserve(e1.nops());
-		for (int i=0; i < e1.nops();++i) {
+		for (size_t i=0; i < e1.nops(); ++i) {
 			// look for a Clifford unit with the same metric and representation label,
 			// if found remember its index
 			if (is_a<clifford>(e1.op(i)) && ex_to<clifford>(e1.op(i)).get_representation_label() == rl

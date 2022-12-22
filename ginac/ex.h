@@ -367,12 +367,17 @@ bool ex::is_equal(const ex & other) const
 
 // Iterators
 
-class const_iterator : public std::iterator<std::random_access_iterator_tag, ex, ptrdiff_t, const ex *, const ex &> {
+class const_iterator {
 	friend class ex;
 	friend class const_preorder_iterator;
 	friend class const_postorder_iterator;
-
 public:
+	using iterator_category = std::random_access_iterator_tag;
+	using value_type = ex;
+	using difference_type = ptrdiff_t;
+	using pointer = const ex *;
+	using reference = const ex &;
+
 	const_iterator() noexcept {}
 
 private:
@@ -513,8 +518,13 @@ struct _iter_rep {
 
 } // namespace internal
 
-class const_preorder_iterator : public std::iterator<std::forward_iterator_tag, ex, ptrdiff_t, const ex *, const ex &> {
+class const_preorder_iterator {
 public:
+	using iterator_category = std::forward_iterator_tag;
+	using value_type = ex;
+	using difference_type = ptrdiff_t;
+	using pointer = const ex *;
+	using reference = const ex &;
 	const_preorder_iterator() noexcept {}
 
 	const_preorder_iterator(const ex &e, size_t n)
@@ -577,8 +587,13 @@ private:
 	}
 };
 
-class const_postorder_iterator : public std::iterator<std::forward_iterator_tag, ex, ptrdiff_t, const ex *, const ex &> {
+class const_postorder_iterator {
 public:
+	using iterator_category = std::forward_iterator_tag;
+	using value_type = ex;
+	using difference_type = ptrdiff_t;
+	using pointer = const ex *;
+	using reference = const ex &;
 	const_postorder_iterator() noexcept {}
 
 	const_postorder_iterator(const ex &e, size_t n)

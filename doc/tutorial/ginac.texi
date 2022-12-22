@@ -135,7 +135,7 @@ the near future.
 
 @section License
 The GiNaC framework for symbolic computation within the C++ programming
-language is Copyright @copyright{} 1999-2021 Johannes Gutenberg
+language is Copyright @copyright{} 1999-2022 Johannes Gutenberg
 University Mainz, Germany.
 
 This program is free software; you can redistribute it and/or
@@ -1194,7 +1194,7 @@ For storing numerical things, GiNaC uses Bruno Haible's library CLN.
 The classes therein serve as foundation classes for GiNaC.  CLN stands
 for Class Library for Numbers or alternatively for Common Lisp Numbers.
 In order to find out more about CLN's internals, the reader is referred to
-the documentation of that library.  @inforef{Introduction, , cln}, for
+the documentation of that library.  @xref{Top,,, cln, The CLN Manual}, for
 more information. Suffice to say that it is by itself build on top of
 another library, the GNU Multiple Precision library GMP, which is an
 extremely fast library for arbitrary long integers and rationals as well
@@ -5379,6 +5379,27 @@ some care with subsequent processing of the result:
 Note also, how factors with the same exponents are not fully factorized
 with this method.
 
+@subsection Square-free partial fraction decomposition
+@cindex square-free partial fraction decomposition
+@cindex partial fraction decomposition
+@cindex @code{sqrfree_parfrac()}
+
+GiNaC also supports square-free partial fraction decomposition of
+rational functions:
+@example
+ex sqrfree_parfrac(const ex & a, const symbol & x);
+@end example
+It is called square-free because it assumes a square-free
+factorization of the input's denominator:
+@example
+    ...
+    symbol x("x");
+
+    ex rat = (x-4)/(pow(x,2)*(x+2));
+    cout << sqrfree_parfrac(rat, x) << endl;
+     // -> -2*x^(-2)+3/2*x^(-1)-3/2*(2+x)^(-1)
+@end example
+
 @subsection Polynomial factorization
 @cindex factorization
 @cindex polynomial factorization
@@ -5700,7 +5721,7 @@ using namespace GiNaC;
 ex machin_pi(int degr)
 @{
     symbol x;
-    ex pi_expansion = series_to_poly(atan(x).series(x,degr));
+    ex pi_expansion = series_to_poly(atan(x).series(x==0,degr));
     ex pi_approx = 16*pi_expansion.subs(x==numeric(1,5))
                    -4*pi_expansion.subs(x==numeric(1,239));
     return pi_approx;
@@ -8018,10 +8039,10 @@ void sprod::archive(archive_node & n) const
     n.add_ex("right", get_struct().right);
 @}
 
-sprod::structure(const archive_node & n) : inherited(n)
+sprod::structure(const archive_node & n, lst & sym_lst) : inherited(n, sym_lst)
 @{
-    n.find_ex("left", get_struct().left);
-    n.find_ex("right", get_struct().right);
+    n.find_ex("left", get_struct().left, sym_lst);
+    n.find_ex("right", get_struct().right, sym_lst);
 @}
 @end example
 
@@ -8782,12 +8803,12 @@ program use @footnote{If GiNaC is installed into some non-standard
 directory @var{prefix} one should set the @var{PKG_CONFIG_PATH}
 environment variable to @var{prefix}/lib/pkgconfig for this to work.}
 @example
-g++ -o simple `pkg-config --cflags --libs ginac` simple.cpp
+g++ -o simple simple.cpp `pkg-config --cflags --libs ginac`
 @end example
 
 This command line might expand to (for example):
 @example
-g++ -o simple -lginac -lcln simple.cpp
+g++ -o simple simple.cpp -lginac -lcln
 @end example
 
 Not only is the form using @command{pkg-config} easier to type, it will

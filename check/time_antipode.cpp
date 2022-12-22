@@ -308,7 +308,7 @@ bool node::operator<(const node &n) const
 		return typeid(*vert).before(typeid(*n.vert));
 	// Are the indices of the top-level nodes different?
 	if (!(*vert==*n.vert))
-		return (vert<n.vert);
+		return (*vert<*n.vert);
 	// Are the sets of children different, one by one?
 	return (children<n.children);
 }

@@ -368,11 +368,17 @@ detail here. Please refer to the GiNaC documentation.
 .BI series( expression ", " relation-or-symbol ", " order )
 \- series expansion
 .br
+.BI series_to_poly( series )
+\- convert a series into a polynomial by dropping the Order() term
+.br
 .BI sprem( expression ", " expression ", " symbol )
 \- sparse pseudo-remainder of polynomials
 .br
 .BI sqrfree( "expression [" ", " symbol-list] )
 \- square-free factorization of a polynomial
+.br
+.BI sqrfree_parfrac( expression ", " symbol )
+\- square-free partial fraction decomposition of rational function
 .br
 .BI sqrt( expression )
 \- square root

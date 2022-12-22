@@ -41,11 +41,6 @@
 #include <stdexcept>
 #include <string>
 
-
-
-#include <stdlib.h>
-#include <unistd.h>
-
 namespace GiNaC {
 
 	

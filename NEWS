@@ -1,5 +1,14 @@
 This file records noteworthy changes.
 
+1.8.4 (19 September 2022)
+* Add support for sqrfree_parfrac().
+* Add info methods for transcendental functions.
+
+1.8.3 (23 March 2022)
+* series_to_poly() can be used from ginsh.
+* Fix power::to_polynomial() for posint exponents.
+* Fix power::subs() in some special cases.
+
 1.8.2 (1 January 2022)
 * Fix elusive bug in comparing relational objects.
 * Ensure modular_form_kernel::series() includes an Order term.

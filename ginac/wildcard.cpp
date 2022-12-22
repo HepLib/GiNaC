@@ -40,7 +40,7 @@ GINAC_IMPLEMENT_REGISTERED_CLASS_OPT(wildcard, basic,
 
 wildcard::wildcard() : label(0)
 {
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 //////////
@@ -49,7 +49,7 @@ wildcard::wildcard() : label(0)
 
 wildcard::wildcard(unsigned l) : label(l)
 {
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
 //////////
@@ -60,7 +60,7 @@ void wildcard::read_archive(const archive_node& n)
 {
 	inherited::read_archive(n);
 	n.find_unsigned("label", label);
-	setflag(status_flags::evaluated | status_flags::expanded | status_flags::hf_expanded);
+	setflag(status_flags::evaluated | status_flags::expanded);
 }
 GINAC_BIND_UNARCHIVER(wildcard);
 

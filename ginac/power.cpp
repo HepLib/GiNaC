@@ -619,7 +619,7 @@ ex power::subs(const exmap & m, unsigned options) const
 
 	if (!are_ex_trivially_equal(basis, subsed_basis)
 	 || !are_ex_trivially_equal(exponent, subsed_exponent)) 
-		return power(subsed_basis, subsed_exponent).subs_one_level(m, options);
+		return dynallocate<power>(subsed_basis, subsed_exponent);
 
 	if (!(options & subs_options::algebraic))
 		return subs_one_level(m, options);
