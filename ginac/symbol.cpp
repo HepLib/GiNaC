@@ -106,7 +106,7 @@ void symbol::read_archive(const archive_node &n)
 {
 	inherited::read_archive(n);
 	//serial = next_serial++;
-    serial = 0;
+    if(!n.find_unsigned("serial", serial)) serial = 0;
 	std::string tmp_name;
 	n.find_string("name", tmp_name);
 
@@ -127,6 +127,7 @@ void symbol::archive(archive_node &n) const
 		n.add_string("name", name);
 	if (!TeX_name.empty())
 		n.add_string("TeX_name", TeX_name);
+    if(serial>0) n.add_unsigned("serial", serial);
 }
 
 //////////

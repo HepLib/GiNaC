@@ -65,7 +65,7 @@ unsigned exam_archive()
 		std::ifstream fin("exam.gar", std::ios_base::binary);
 		fin >> ar;
 	}
-	f = ar.unarchive_ex(lst{x, y, mu, dim}, "expr 1");
+	f = ar.unarchive_ex("expr 1");
 
 	ex difference = (f - e).expand();
 	if (!difference.is_zero()) {
@@ -89,7 +89,7 @@ unsigned numeric_complex_bug()
 			ex e = numeric(n);
 			archive ar;
 			ar.archive_ex(e, "test");
-			ex check = ar.unarchive_ex(lst{}, "test");
+			ex check = ar.unarchive_ex("test");
 			if (!check.is_equal(e)) {
 				clog << __FILE__ << ':' << __LINE__ << ": expected: " << e << ", got " << check << endl;
 				return 1;
