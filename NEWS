@@ -1,5 +1,9 @@
 This file records noteworthy changes.
 
+1.8.5 (1 January 2023)
+* Speed up multivariate polynomial factorization; fix it in some rare
+  corner cases where it didn't previously terminate.
+
 1.8.4 (19 September 2022)
 * Add support for sqrfree_parfrac().
 * Add info methods for transcendental functions.

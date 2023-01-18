@@ -5,10 +5,10 @@ START-INFO-DIR-ENTRY
 * ginac: (ginac).                   C++ library for symbolic computation.
 END-INFO-DIR-ENTRY
 
-This is a tutorial that documents GiNaC 1.8.4, an open framework for
+This is a tutorial that documents GiNaC 1.8.5, an open framework for
 symbolic computation within the C++ programming language.
 
-Copyright (C) 1999-2022 Johannes Gutenberg University Mainz, Germany
+Copyright (C) 1999-2023 Johannes Gutenberg University Mainz, Germany
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -25,7 +25,7 @@ File: ginac.info,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (dir)
 GiNaC
 *****
 
-This is a tutorial that documents GiNaC 1.8.4, an open framework for
+This is a tutorial that documents GiNaC 1.8.5, an open framework for
 symbolic computation within the C++ programming language.
 
 * Menu:
@@ -88,7 +88,7 @@ things that are unlikely to change in the near future.
 ===========
 
 The GiNaC framework for symbolic computation within the C++ programming
-language is Copyright (C) 1999-2022 Johannes Gutenberg University Mainz,
+language is Copyright (C) 1999-2023 Johannes Gutenberg University Mainz,
 Germany.
 
 This program is free software; you can redistribute it and/or modify it

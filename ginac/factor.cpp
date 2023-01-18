@@ -33,7 +33,7 @@
  */
 
 /*
- *  GiNaC Copyright (C) 1999-2022 Johannes Gutenberg University Mainz, Germany
+ *  GiNaC Copyright (C) 1999-2023 Johannes Gutenberg University Mainz, Germany
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "normal.h"
 #include "add.h"
 
+#include <type_traits>
 #include <algorithm>
 #include <limits>
 #include <list>
@@ -79,6 +80,9 @@ using namespace std;
 using namespace cln;
 
 namespace GiNaC {
+
+// anonymous namespace to hide all utility functions
+namespace {
 
 #ifdef DEBUGFACTOR
 #define DCOUT(str) cout << #str << endl
@@ -133,9 +137,6 @@ ostream& operator<<(ostream& o, const vector<vector<cl_MI>>& v)
 #define DCOUT2(str,var)
 #endif // def DEBUGFACTOR
 
-// anonymous namespace to hide all utility functions
-namespace {
-
 ////////////////////////////////////////////////////////////////////////////////
 // modular univariate polynomial code
 
@@ -143,7 +144,8 @@ typedef std::vector<cln::cl_MI> umodpoly;
 typedef std::vector<cln::cl_I> upoly;
 typedef vector<umodpoly> upvec;
 
-// COPY FROM UPOLY.HPP
+
+// COPY FROM UPOLY.H
 
 // CHANGED size_t -> int !!!
 template<typename T> static int degree(const T& p)
@@ -156,6 +158,11 @@ template<typename T> static typename T::value_type lcoeff(const T& p)
 	return p[p.size() - 1];
 }
 
+/** Make the polynomial unit normal (having unit normal leading coefficient).
+ *
+ *  @param[in, out] a  polynomial to make unit normal
+ *  @return            true if polynomial a was already unit normal, false otherwise
+ */
 static bool normalize_in_field(umodpoly& a)
 {
 	if (a.size() == 0)
@@ -170,61 +177,22 @@ static bool normalize_in_field(umodpoly& a)
 	return false;
 }
 
+/** Remove leading zero coefficients from polynomial.
+ *
+ *  @param[in, out] p     polynomial from which the zero leading coefficients will be removed
+ *  @param[in]      hint  assume all coefficients of order ≥ hint are zero
+ */
 template<typename T> static void
 canonicalize(T& p, const typename T::size_type hint = std::numeric_limits<typename T::size_type>::max())
 {
-	if (p.empty())
-		return;
+	std::size_t i = min(p.size(), hint);
 
-	std::size_t i = p.size() - 1;
-	// Be fast if the polynomial is already canonicalized
-	if (!zerop(p[i]))
-		return;
+	while ( i-- && zerop(p[i]) ) { }
 
-	if (hint < p.size())
-		i = hint;
-
-	bool is_zero = false;
-	do {
-		if (!zerop(p[i])) {
-			++i;
-			break;
-		}
-		if (i == 0) {
-			is_zero = true;
-			break;
-		}
-		--i;
-	} while (true);
-
-	if (is_zero) {
-		p.clear();
-		return;
-	}
-
-	p.erase(p.begin() + i, p.end());
+	p.erase(p.begin() + i + 1, p.end());
 }
 
-// END COPY FROM UPOLY.HPP
-
-static void expt_pos(umodpoly& a, unsigned int q)
-{
-	if ( a.empty() ) return;
-	cl_MI zero = a[0].ring()->zero(); 
-	int deg = degree(a);
-	a.resize(degree(a)*q+1, zero);
-	for ( int i=deg; i>0; --i ) {
-		a[i*q] = a[i];
-		a[i] = zero;
-	}
-}
-
-template<bool COND, typename T = void> struct enable_if
-{
-	typedef T type;
-};
-
-template<typename T> struct enable_if<false, T> { /* empty */ };
+// END COPY FROM UPOLY.H
 
 template<typename T> struct uvar_poly_p
 {
@@ -487,12 +455,12 @@ static umodpoly umodpoly_to_umodpoly(const umodpoly& a, const cl_modint_ring& R,
 	return e;
 }
 
-/** Divides all coefficients of the polynomial a by the integer x.
+/** Divides all coefficients of the polynomial a by the positive integer x.
  *  All coefficients are supposed to be divisible by x. If they are not, the
- *  the<cl_I> cast will raise an exception.
+ *  division will raise an exception.
  *
  *  @param[in,out] a  polynomial of which the coefficients will be reduced by x
- *  @param[in]     x  integer that divides the coefficients
+ *  @param[in]     x  positive integer that divides the coefficients
  */
 static void reduce_coeff(umodpoly& a, const cl_I& x)
 {
@@ -502,7 +470,7 @@ static void reduce_coeff(umodpoly& a, const cl_I& x)
 	for (auto & i : a) {
 		// cln cannot perform this division in the modular field
 		cl_I c = R->retract(i);
-		i = cl_MI(R, the<cl_I>(c / x));
+		i = cl_MI(R, exquopos(c, x));
 	}
 }
 
@@ -532,7 +500,7 @@ static void rem(const umodpoly& a, const umodpoly& b, umodpoly& r)
 	} while ( k-- );
 
 	fill(r.begin()+n, r.end(), a[0].ring()->zero());
-	canonicalize(r);
+	canonicalize(r, n);
 }
 
 /** Calculates quotient of a/b.
@@ -643,7 +611,6 @@ static void deriv(const umodpoly& a, umodpoly& d)
 
 static bool unequal_one(const umodpoly& a)
 {
-	if ( a.empty() ) return true;
 	return ( a.size() != 1 || a[0] != a[0].ring()->one() );
 }
 
@@ -667,6 +634,26 @@ static bool squarefree(const umodpoly& a)
 	umodpoly c;
 	gcd(a, b, c);
 	return equal_one(c);
+}
+
+/** Computes w^q mod a.
+ *  Uses theorem 2.1 from A.K.Lenstra's PhD thesis; see exercise 8.13 in [GCL].
+ *
+ *  @param[in]  w  polynomial
+ *  @param[in]  a  modulus polynomial
+ *  @param[in]  q  common modulus of w and a
+ *  @param[out] r  result
+ */
+static void expt_pos_Q(const umodpoly& w, const umodpoly& a, unsigned int q, umodpoly& r)
+{
+	if ( w.empty() ) return;
+	cl_MI zero = w[0].ring()->zero();
+	int deg = degree(w);
+	umodpoly buf(deg*q+1, zero);
+	for ( size_t i=0; i<=deg; ++i ) {
+		buf[i*q] = w[i];
+	}
+	rem(buf, a, r);
 }
 
 // END modular univariate polynomial code
@@ -815,6 +802,8 @@ ostream& operator<<(ostream& o, const modular_matrix& m)
 
 /** Calculates the Q matrix for a polynomial. Used by Berlekamp's algorithm.
  *
+ *  The implementation follows algorithm 8.5 of [GCL].
+ *
  *  @param[in]  a_  modular polynomial
  *  @param[out] Q   Q matrix
  */
@@ -892,7 +881,7 @@ static void nullspace(modular_matrix& M, vector<mvec>& basis)
 
 /** Berlekamp's modular factorization.
  *  
- *  The implementation follows the algorithm in chapter 8 of [GCL].
+ *  The implementation follows algorithm 8.4 of [GCL].
  *
  *  @param[in]  a    modular polynomial
  *  @param[out] upv  vector containing modular factors. if upv was not empty the
@@ -965,9 +954,9 @@ static void berlekamp(const umodpoly& a, upvec& upv)
 
 /** Calculates a^(1/prime).
  *  
- *  @param[in] a      polynomial
- *  @param[in] prime  prime number -> exponent 1/prime
- *  @param[in] ap     resulting polynomial
+ *  @param[in]  a      polynomial
+ *  @param[in]  prime  prime number -> exponent 1/prime
+ *  @param[out] ap     resulting polynomial
  */
 static void expt_1_over_p(const umodpoly& a, unsigned int prime, umodpoly& ap)
 {
@@ -1033,7 +1022,7 @@ static void modsqrfree(const umodpoly& a, upvec& factors, vector<int>& mult)
 
 /** Distinct degree factorization (DDF).
  *  
- *  The implementation follows the algorithm in chapter 8 of [GCL].
+ *  The implementation follows algorithm 8.8 of [GCL].
  *
  *  @param[in]  a_         modular polynomial
  *  @param[out] degrees    vector containing the degrees of the factors of the
@@ -1050,23 +1039,17 @@ static void distinct_degree_factor(const umodpoly& a_, vector<int>& degrees, upv
 	int nhalf = degree(a)/2;
 
 	int i = 1;
-	umodpoly w(2);
-	w[0] = R->zero();
-	w[1] = R->one();
+	umodpoly w = {R->zero(), R->one()};
 	umodpoly x = w;
 
 	while ( i <= nhalf ) {
-		expt_pos(w, q);
 		umodpoly buf;
-		rem(w, a, buf);
+		expt_pos_Q(w, a, q, buf);
 		w = buf;
-		umodpoly wx = w - x;
-		gcd(a, wx, buf);
+		gcd(a, w - x, buf);
 		if ( unequal_one(buf) ) {
 			degrees.push_back(i);
 			ddfactors.push_back(buf);
-		}
-		if ( unequal_one(buf) ) {
 			umodpoly buf2;
 			div(a, buf, buf2);
 			a = buf2;
@@ -1193,43 +1176,35 @@ static upoly replace_lc(const upoly& poly, const cl_I& lc)
 	return r;
 }
 
-/** Calculates the bound for the modulus.
- *  See [Mig].
+/** Calculates bound for the product of absolute values (modulus) of the roots.
+ *  Uses Landau's inequality, see [Mig].
  */
-static inline cl_I calc_bound(const ex& a, const ex& x, int maxdeg)
+static inline cl_I calc_bound(const ex& a, const ex& x)
 {
-	cl_I maxcoeff = 0;
-	cl_R coeff = 0;
+	cl_R radicand = 0;
 	for ( int i=a.degree(x); i>=a.ldegree(x); --i ) {
 		cl_I aa = abs(the<cl_I>(ex_to<numeric>(a.coeff(x, i)).to_cl_N()));
-		if ( aa > maxcoeff ) maxcoeff = aa;
-		coeff = coeff + square(aa);
+		radicand = radicand + square(aa);
 	}
-	cl_I coeffnorm = ceiling1(the<cl_R>(cln::sqrt(coeff)));
-	cl_I B = coeffnorm * expt_pos(cl_I(2), cl_I(maxdeg));
-	return ( B > maxcoeff ) ? B : maxcoeff;
+	return ceiling1(the<cl_R>(cln::sqrt(radicand)));
 }
 
-/** Calculates the bound for the modulus.
- *  See [Mig].
+/** Calculates bound for the product of absolute values (modulus) of the roots.
+ *  Uses Landau's inequality, see [Mig].
  */
-static inline cl_I calc_bound(const upoly& a, int maxdeg)
+static inline cl_I calc_bound(const upoly& a)
 {
-	cl_I maxcoeff = 0;
-	cl_R coeff = 0;
+	cl_R radicand = 0;
 	for ( int i=degree(a); i>=0; --i ) {
 		cl_I aa = abs(a[i]);
-		if ( aa > maxcoeff ) maxcoeff = aa;
-		coeff = coeff + square(aa);
+		radicand = radicand + square(aa);
 	}
-	cl_I coeffnorm = ceiling1(the<cl_R>(cln::sqrt(coeff)));
-	cl_I B = coeffnorm * expt_pos(cl_I(2), cl_I(maxdeg));
-	return ( B > maxcoeff ) ? B : maxcoeff;
+	return ceiling1(the<cl_R>(cln::sqrt(radicand)));
 }
 
 /** Hensel lifting as used by factor_univariate().
  *
- *  The implementation follows the algorithm in chapter 6 of [GCL].
+ *  The implementation follows algorithm 6.1 of [GCL].
  *
  *  @param[in]  a_   primitive univariate polynomials
  *  @param[in]  p    prime number that does not divide lcoeff(a)
@@ -1246,7 +1221,7 @@ static void hensel_univar(const upoly& a_, unsigned int p, const umodpoly& u1_, 
 
 	// calc bound B
 	int maxdeg = (degree(u1_) > degree(w1_)) ? degree(u1_) : degree(w1_);
-	cl_I maxmodulus = 2*calc_bound(a, maxdeg);
+	cl_I maxmodulus = ash(calc_bound(a), maxdeg+1);  // = 2 * calc_bound(a) * 2^maxdeg
 
 	// step 1
 	cl_I alpha = lcoeff(a);
@@ -1314,42 +1289,36 @@ static void hensel_univar(const upoly& a_, unsigned int p, const umodpoly& u1_, 
 	}
 }
 
-/** Returns a new prime number.
+/** Returns a new small prime number.
  *
- *  @param[in] p  prime number
- *  @return       next prime number after p
+ *  @param[in] n  an integer
+ *  @return       smallest prime greater than n
  */
-static unsigned int next_prime(unsigned int p)
+static unsigned int next_prime(unsigned int n)
 {
-	static vector<unsigned int> primes;
-	if (primes.empty()) {
-		primes = {3, 5, 7};
-	}
-	if ( p >= primes.back() ) {
-		unsigned int candidate = primes.back() + 2;
-		while ( true ) {
-			size_t n = primes.size()/2;
-			for ( size_t i=0; i<n; ++i ) {
-				if (candidate % primes[i])
-					continue;
-				candidate += 2;
-				i=-1;
-			}
-			primes.push_back(candidate);
-			if (candidate > p)
+	static vector<unsigned int> primes = {2, 3, 5, 7};
+	unsigned int candidate = primes.back();
+	while (primes.back() <= n) {
+		candidate += 2;
+		bool is_prime = true;
+		for (size_t i=1; primes[i]*primes[i]<=candidate; ++i) {
+			if (candidate % primes[i] == 0) {
+				is_prime = false;
 				break;
+			}
 		}
-		return candidate;
+		if (is_prime)
+			primes.push_back(candidate);
 	}
 	for (auto & it : primes) {
-		if ( it > p ) {
+		if ( it > n ) {
 			return it;
 		}
 	}
 	throw logic_error("next_prime: should not reach this point!");
 }
 
-/** Manages the splitting a vector of of modular factors into two partitions.
+/** Manages the splitting of a vector of modular factors into two partitions.
  */
 class factor_partition
 {
@@ -1662,7 +1631,7 @@ static vector<ex> multivar_diophant(const vector<ex>& a_, const ex& x, const ex&
  *  with deg(s_i) < deg(a_i)
  *  and with given b_1 = a_1 * ... * a_{i-1} * a_{i+1} * ... * a_r
  *
- *  The implementation follows the algorithm in chapter 6 of [GCL].
+ *  The implementation follows algorithm 6.3 of [GCL].
  *
  *  @param[in]  a   vector of modular univariate polynomials
  *  @param[in]  x   symbol
@@ -1717,7 +1686,7 @@ static void change_modulus(const cl_modint_ring& R, umodpoly& a)
  *
  *  Solves  s*a + t*b == 1 mod p^k  given a,b.
  *
- *  The implementation follows the algorithm in chapter 6 of [GCL].
+ *  The implementation follows algorithm 6.3 of [GCL].
  *
  *  @param[in]  a   polynomial
  *  @param[in]  b   polynomial
@@ -1776,7 +1745,7 @@ static void eea_lift(const umodpoly& a, const umodpoly& b, const ex& x, unsigned
  *    s_1*b_1 + ... + s_r*b_r == x^m mod p^k
  *  with given b_1 = a_1 * ... * a_{i-1} * a_{i+1} * ... * a_r
  *
- *  The implementation follows the algorithm in chapter 6 of [GCL].
+ *  The implementation follows algorithm 6.3 of [GCL].
  *
  *  @param a  vector with univariate polynomials mod p^k
  *  @param x  symbol
@@ -1860,7 +1829,7 @@ static ex make_modular(const ex& e, const cl_modint_ring& R)
  *    s_1*b_1 + ... + s_r*b_r == c mod <I^(d+1),p^k>
  *  with given b_1 = a_1 * ... * a_{i-1} * a_{i+1} * ... * a_r
  *
- *  The implementation follows the algorithm in chapter 6 of [GCL].
+ *  The implementation follows algorithm 6.2 of [GCL].
  *
  *  @param a_  vector of multivariate factors mod p^k
  *  @param x   symbol (equiv. x_1 in [GCL])
@@ -1970,7 +1939,7 @@ static vector<ex> multivar_diophant(const vector<ex>& a_, const ex& x, const ex&
 }
 
 /** Multivariate Hensel lifting.
- *  The implementation follows the algorithm in chapter 6 of [GCL].
+ *  The implementation follows algorithm 6.4 of [GCL].
  *  Since we don't have a data type for modular multivariate polynomials, the
  *  respective operations are done in a GiNaC::ex and the function
  *  make_modular() is then called to make the coefficient modular p^l.
@@ -2076,62 +2045,63 @@ static ex hensel_multivar(const ex& a, const ex& x, const vector<EvalPoint>& I,
 	}
 }
 
-/** Takes a factorized expression and puts the factors in a lst. The exponents
+/** Takes a factorized expression and puts the factors in a vector. The exponents
  *  of the factors are discarded, e.g. 7*x^2*(y+1)^4 --> {7,x,y+1}. The first
- *  element of the list is always the numeric coefficient.
+ *  element of the result is always the numeric coefficient.
  */
-static ex put_factors_into_lst(const ex& e)
+static exvector put_factors_into_vec(const ex& e)
 {
-	lst result;
+	exvector result;
 	if ( is_a<numeric>(e) ) {
-		result.append(e);
+		result.push_back(e);
 		return result;
 	}
 	if ( is_a<power>(e) ) {
-		result.append(1);
-		result.append(e.op(0));
+		result.push_back(1);
+		result.push_back(e.op(0));
 		return result;
 	}
 	if ( is_a<symbol>(e) || is_a<add>(e) ) {
 		ex icont(e.integer_content());
-		result.append(icont);
-		result.append(e/icont);
+		result.push_back(icont);
+		result.push_back(e/icont);
 		return result;
 	}
 	if ( is_a<mul>(e) ) {
 		ex nfac = 1;
+		result.push_back(nfac);
 		for ( size_t i=0; i<e.nops(); ++i ) {
 			ex op = e.op(i);
 			if ( is_a<numeric>(op) ) {
 				nfac = op;
 			}
 			if ( is_a<power>(op) ) {
-				result.append(op.op(0));
+				result.push_back(op.op(0));
 			}
 			if ( is_a<symbol>(op) || is_a<add>(op) ) {
-				result.append(op);
+				result.push_back(op);
 			}
 		}
-		result.prepend(nfac);
+		result[0] = nfac;
 		return result;
 	}
-	throw runtime_error("put_factors_into_lst: bad term.");
+	throw runtime_error("put_factors_into_vec: bad term.");
 }
 
 /** Checks a set of numbers for whether each number has a unique prime factor.
  *
- *  @param[in]  f  list of numbers to check
+ *  @param[in]  f  numbers to check
  *  @return        true: if number set is bad, false: if set is okay (has unique
  *                 prime factors)
  */
-static bool checkdivisors(const lst& f)
+static bool checkdivisors(const exvector& f)
 {
-	const int k = f.nops();
+	const int k = f.size();
 	numeric q, r;
 	vector<numeric> d(k);
-	d[0] = ex_to<numeric>(abs(f.op(0)));
+	d[0] = ex_to<numeric>(abs(f[0]));
 	for ( int i=1; i<k; ++i ) {
-		q = ex_to<numeric>(abs(f.op(i)));
+		q = ex_to<numeric>(abs(f[i]));
 		for ( int j=i-1; j>=0; --j ) {
 			r = d[j];
 			do {
@@ -2156,25 +2126,24 @@ static bool checkdivisors(const lst& f)
  *
  *  @param[in]     u        multivariate polynomial to be factored
  *  @param[in]     vn       leading coefficient of u in x (x==first symbol in syms)
- *  @param[in]     syms     set of symbols that appear in u
- *  @param[in]     f        lst containing the factors of the leading coefficient vn
+ *  @param[in]     x        first symbol that appears in u
+ *  @param[in]     syms_wox remaining symbols that appear in u
+ *  @param[in]     f        vector containing the factors of the leading coefficient vn
  *  @param[in,out] modulus  integer modulus for random number generation (i.e. |a_i| < modulus)
  *  @param[out]    u0       returns the evaluated (univariate) polynomial
  *  @param[out]    a        returns the valid evaluation points. must have initial size equal
  *                          number of symbols-1 before calling generate_set
  */
-static void generate_set(const ex& u, const ex& vn, const exset& syms, const lst& f,
+static void generate_set(const ex& u, const ex& vn, const ex& x, const exset& syms_wox, const exvector& f,
                          numeric& modulus, ex& u0, vector<numeric>& a)
 {
-	const ex& x = *syms.begin();
 	while ( true ) {
 		++modulus;
 		// generate a set of integers ...
 		u0 = u;
 		ex vna = vn;
 		ex vnatry;
-		exset::const_iterator s = syms.begin();
-		++s;
+		auto s = syms_wox.begin();
 		for ( size_t i=0; i<a.size(); ++i ) {
 			do {
 				a[i] = mod(numeric(rand()), 2*modulus) - modulus;
@@ -2192,14 +2161,13 @@ static void generate_set(const ex& u, const ex& vn, const exset& syms, const lst
 		}
 		if ( !is_a<numeric>(vn) ) {
 			// ... and for which the evaluated factors have each an unique prime factor
-			lst fnum = f;
-			fnum.let_op(0) = fnum.op(0) * u0.content(x);
-			for ( size_t i=1; i<fnum.nops(); ++i ) {
-				if ( !is_a<numeric>(fnum.op(i)) ) {
-					s = syms.begin();
-					++s;
+			exvector fnum = f;
+			fnum[0] = fnum[0] * u0.content(x);
+			for ( size_t i=1; i<fnum.size(); ++i ) {
+				if ( !is_a<numeric>(fnum[i]) ) {
+					s = syms_wox.begin();
 					for ( size_t j=0; j<a.size(); ++j, ++s ) {
-						fnum.let_op(i) = fnum.op(i).subs(*s == a[j]);
+						fnum[i] = fnum[i].subs(*s == a[j]);
 					}
 				}
 			}
@@ -2215,71 +2183,42 @@ static void generate_set(const ex& u, const ex& vn, const exset& syms, const lst
 // forward declaration
 static ex factor_sqrfree(const ex& poly);
 
-/** Multivariate factorization.
- *  
- *  The implementation is based on the algorithm described in [Wan].
- *  An evaluation homomorphism (a set of integers) is determined that fulfills
- *  certain criteria. The evaluated polynomial is univariate and is factorized
- *  by factor_univariate(). The main work then is to find the correct leading
- *  coefficients of the univariate factors. They have to correspond to the
- *  factors of the (multivariate) leading coefficient of the input polynomial
- *  (as defined for a specific variable x). After that the Hensel lifting can be
- *  performed.
- *
- *  @param[in] poly  expanded, square free polynomial
- *  @param[in] syms  contains the symbols in the polynomial
- *  @return          factorized polynomial
+/** Used by factor_multivariate().
  */
-static ex factor_multivariate(const ex& poly, const exset& syms)
-{
-	const ex& x = *syms.begin();
-
-	// make polynomial primitive
-	ex unit, cont, pp;
-	poly.unitcontprim(x, unit, cont, pp);
-	if ( !is_a<numeric>(cont) ) {
-		return unit * factor_sqrfree(cont) * factor_sqrfree(pp);
-	}
-
-	// factor leading coefficient
-	ex vn = pp.collect(x).lcoeff(x);
-	ex vnlst;
-	if ( is_a<numeric>(vn) ) {
-		vnlst = lst{vn};
-	}
-	else {
-		ex vnfactors = factor(vn);
-		vnlst = put_factors_into_lst(vnfactors);
-	}
-
-	const unsigned int maxtrials = 3;
-	numeric modulus = (vnlst.nops() > 3) ? vnlst.nops() : 3;
-	vector<numeric> a(syms.size()-1, 0);
-
-	// try now to factorize until we are successful
-	while ( true ) {
+struct factorization_ctx {
+	const ex poly, x;         // polynomial, first symbol x...
+	const exset syms_wox;     // ...remaining symbols w/o x
+	ex unit, cont, pp;        // unit * cont * pp == poly
+	ex vn; exvector vnlst;    // leading coeff, factors of leading coeff
+	numeric modulus;          // incremented each time we try
+	/** returns factors or empty if it did not succeed */
+	ex try_next_evaluation_homomorphism()
+	{
+		constexpr unsigned maxtrials = 3;
+		vector<numeric> a(syms_wox.size(), 0);
 
 		unsigned int trialcount = 0;
 		unsigned int prime;
 		int factor_count = 0;
 		int min_factor_count = -1;
 		ex u, delta;
-		ex ufac, ufaclst;
+		ex ufac;
+		exvector ufaclst;
 
 		// try several evaluation points to reduce the number of factors
 		while ( trialcount < maxtrials ) {
 
 			// generate a set of valid evaluation points
-			generate_set(pp, vn, syms, ex_to<lst>(vnlst), modulus, u, a);
+			generate_set(pp, vn, x, syms_wox, vnlst, modulus, u, a);
 
 			ufac = factor_univariate(u, x, prime);
-			ufaclst = put_factors_into_lst(ufac);
-			factor_count = ufaclst.nops()-1;
-			delta = ufaclst.op(0);
+			ufaclst = put_factors_into_vec(ufac);
+			factor_count = ufaclst.size()-1;
+			delta = ufaclst[0];
 
 			if ( factor_count <= 1 ) {
 				// irreducible
-				return poly;
+				return lst{pp};
 			}
 			if ( min_factor_count < 0 ) {
 				// first time here
@@ -2300,19 +2239,18 @@ static ex factor_multivariate(const ex& poly, const exset& syms)
 		vector<ex> C(factor_count);
 		if ( is_a<numeric>(vn) ) {
 			// easy case
-			for ( size_t i=1; i<ufaclst.nops(); ++i ) {
-				C[i-1] = ufaclst.op(i).lcoeff(x);
+			for ( size_t i=1; i<ufaclst.size(); ++i ) {
+				C[i-1] = ufaclst[i].lcoeff(x);
 			}
 		} else {
 			// difficult case.
 			// we use the property of the ftilde having a unique prime factor.
 			// details can be found in [Wan].
 			// calculate ftilde
-			vector<numeric> ftilde(vnlst.nops()-1);
+			vector<numeric> ftilde(vnlst.size()-1);
 			for ( size_t i=0; i<ftilde.size(); ++i ) {
-				ex ft = vnlst.op(i+1);
-				auto s = syms.begin();
-				++s;
+				ex ft = vnlst[i+1];
+				auto s = syms_wox.begin();
 				for ( size_t j=0; j<a.size(); ++j ) {
 					ft = ft.subs(*s == a[j]);
 					++s;
@@ -2324,39 +2262,41 @@ static ex factor_multivariate(const ex& poly, const exset& syms)
 			vector<ex> D(factor_count, 1);
 			if ( delta == 1 ) {
 				for ( int i=0; i<factor_count; ++i ) {
-					numeric prefac = ex_to<numeric>(ufaclst.op(i+1).lcoeff(x));
+					numeric prefac = ex_to<numeric>(ufaclst[i+1].lcoeff(x));
 					for ( int j=ftilde.size()-1; j>=0; --j ) {
 						int count = 0;
-						while ( irem(prefac, ftilde[j]) == 0 ) {
-							prefac = iquo(prefac, ftilde[j]);
+						numeric q;
+						while ( irem(prefac, ftilde[j], q) == 0 ) {
+							prefac = q;
 							++count;
 						}
 						if ( count ) {
 							used_flag[j] = true;
-							D[i] = D[i] * pow(vnlst.op(j+1), count);
+							D[i] = D[i] * pow(vnlst[j+1], count);
 						}
 					}
 					C[i] = D[i] * prefac;
 				}
 			} else {
 				for ( int i=0; i<factor_count; ++i ) {
-					numeric prefac = ex_to<numeric>(ufaclst.op(i+1).lcoeff(x));
+					numeric prefac = ex_to<numeric>(ufaclst[i+1].lcoeff(x));
 					for ( int j=ftilde.size()-1; j>=0; --j ) {
 						int count = 0;
-						while ( irem(prefac, ftilde[j]) == 0 ) {
-							prefac = iquo(prefac, ftilde[j]);
+						numeric q;
+						while ( irem(prefac, ftilde[j], q) == 0 ) {
+							prefac = q;
 							++count;
 						}
 						while ( irem(ex_to<numeric>(delta)*prefac, ftilde[j]) == 0 ) {
 							numeric g = gcd(prefac, ex_to<numeric>(ftilde[j]));
 							prefac = iquo(prefac, g);
 							delta = delta / (ftilde[j]/g);
-							ufaclst.let_op(i+1) = ufaclst.op(i+1) * (ftilde[j]/g);
+							ufaclst[i+1] = ufaclst[i+1] * (ftilde[j]/g);
 							++count;
 						}
 						if ( count ) {
 							used_flag[j] = true;
-							D[i] = D[i] * pow(vnlst.op(j+1), count);
+							D[i] = D[i] * pow(vnlst[j+1], count);
 						}
 					}
 					C[i] = D[i] * prefac;
@@ -2371,59 +2311,114 @@ static ex factor_multivariate(const ex& poly, const exset& syms)
 				}
 			}
 			if ( some_factor_unused ) {
-				continue;
+				return lst{};  // next try
 			}
 		}
-		
+
 		// multiply the remaining content of the univariate polynomial into the
 		// first factor
 		if ( delta != 1 ) {
 			C[0] = C[0] * delta;
-			ufaclst.let_op(1) = ufaclst.op(1) * delta;
+			ufaclst[1] = ufaclst[1] * delta;
 		}
 
 		// set up evaluation points
-		EvalPoint ep;
 		vector<EvalPoint> epv;
-		auto s = syms.begin();
-		++s;
+		auto s = syms_wox.begin();
 		for ( size_t i=0; i<a.size(); ++i ) {
-			ep.x = *s++;
-			ep.evalpoint = a[i].to_int();
-			epv.push_back(ep);
+			epv.emplace_back(EvalPoint{*s++, a[i].to_int()});
 		}
 
 		// calc bound p^l
 		int maxdeg = 0;
 		for ( int i=1; i<=factor_count; ++i ) {
-			if ( ufaclst.op(i).degree(x) > maxdeg ) {
+			if ( ufaclst[i].degree(x) > maxdeg ) {
 				maxdeg = ufaclst[i].degree(x);
 			}
 		}
-		cl_I B = 2*calc_bound(u, x, maxdeg);
+		cl_I B = ash(calc_bound(u, x), maxdeg+1);  // = 2 * calc_bound(u,x) * 2^maxdeg
 		cl_I l = 1;
 		cl_I pl = prime;
 		while ( pl < B ) {
 			l = l + 1;
 			pl = pl * prime;
 		}
-		
+
 		// set up modular factors (mod p^l)
-		cl_modint_ring R = find_modint_ring(expt_pos(cl_I(prime),l));
-		upvec modfactors(ufaclst.nops()-1);
-		for ( size_t i=1; i<ufaclst.nops(); ++i ) {
-			umodpoly_from_ex(modfactors[i-1], ufaclst.op(i), x, R);
+		cl_modint_ring R = find_modint_ring(pl);
+		upvec modfactors(ufaclst.size()-1);
+		for ( size_t i=1; i<ufaclst.size(); ++i ) {
+			umodpoly_from_ex(modfactors[i-1], ufaclst[i], x, R);
 		}
 
 		// try Hensel lifting
-		ex res = hensel_multivar(pp, x, epv, prime, l, modfactors, C);
+		return hensel_multivar(pp, x, epv, prime, l, modfactors, C);
+	}
+};
+
+/** Multivariate factorization.
+ *
+ *  The implementation is based on the algorithm described in [Wan].
+ *  An evaluation homomorphism (a set of integers) is determined that fulfills
+ *  certain criteria. The evaluated polynomial is univariate and is factorized
+ *  by factor_univariate(). The main work then is to find the correct leading
+ *  coefficients of the univariate factors. They have to correspond to the
+ *  factors of the (multivariate) leading coefficient of the input polynomial
+ *  (as defined for a specific variable x). After that the Hensel lifting can be
+ *  performed. This is done in round-robin for each x in syms until success.
+ *
+ *  @param[in] poly  expanded, square free polynomial
+ *  @param[in] syms  contains the symbols in the polynomial
+ *  @return          factorized polynomial
+ */
+static ex factor_multivariate(const ex& poly, const exset& syms)
+{
+	// set up one factorization context for each symbol
+	vector<factorization_ctx> ctx_in_x;
+	for (auto x : syms) {
+		exset syms_wox;  // remaining syms w/o x
+		copy_if(syms.begin(), syms.end(),
+		        inserter(syms_wox, syms_wox.end()), [x](const ex& y){ return y != x; });
+
+		factorization_ctx ctx = {.poly = poly, .x = x,
+		                         .syms_wox = syms_wox};
+
+		// make polynomial primitive
+		poly.unitcontprim(x, ctx.unit, ctx.cont, ctx.pp);
+		if ( !is_a<numeric>(ctx.cont) ) {
+			// content is a polynomial in one or more of remaining syms, let's start over
+			return ctx.unit * factor_sqrfree(ctx.cont) * factor_sqrfree(ctx.pp);
+		}
+
+		// find factors of leading coefficient
+		ctx.vn = ctx.pp.collect(x).lcoeff(x);
+		ctx.vnlst = put_factors_into_vec(factor(ctx.vn));
+
+		ctx.modulus = (ctx.vnlst.size() > 3) ? ctx.vnlst.size() : 3;
+
+		ctx_in_x.push_back(ctx);
+	}
+
+	// try an evaluation homomorphism for each context in round-robin
+	auto ctx = ctx_in_x.begin();
+	while ( true ) {
+
+		ex res = ctx->try_next_evaluation_homomorphism();
+
 		if ( res != lst{} ) {
-			ex result = cont * unit;
+			// found the factors
+			ex result = ctx->cont * ctx->unit;
 			for ( size_t i=0; i<res.nops(); ++i ) {
-				result *= res.op(i).content(x) * res.op(i).unit(x);
-				result *= res.op(i).primpart(x);
+				ex unit, cont, pp;
+				res.op(i).unitcontprim(ctx->x, unit, cont, pp);
+				result *= unit * cont * pp;
 			}
 			return result;
+		}
+
+		// switch context for next symbol
+		if (++ctx == ctx_in_x.end()) {
+			ctx = ctx_in_x.begin();
 		}
 	}
 }

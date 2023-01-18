@@ -3,7 +3,7 @@
  *  Factorization test suite. */
 
 /*
- *  GiNaC Copyright (C) 1999-2022 Johannes Gutenberg University Mainz, Germany
+ *  GiNaC Copyright (C) 1999-2023 Johannes Gutenberg University Mainz, Germany
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -280,6 +280,42 @@ static unsigned exam_factor_wang()
 	return result;
 }
 
+static unsigned exam_factor_magerya()
+{
+	// In 2017, Vitaly Magerya reported a class of biviariate polynomials
+	// where Hensel lifting sometimes failed to terminate.
+	// https://www.ginac.de/pipermail/ginac-list/2017-December/002162.html
+	unsigned result = 0;
+	ex e;
+	symbol x("x"), y("y");
+
+	e = (1+2*x+y)*(1+2*x-y)*(2*x-y)*(2*x+y);
+	result += check_factor_expanded(e);
+
+	e = (7+4*x+y)*(-5+2*x-y)*(-6+6*x+y)*y*(10+2*x+y);
+	result += check_factor_expanded(e);
+
+	e = (8+6*x-y)*(-5+4*x-y)*(-5+6*x+y)*(-2+2*x-y)*(2+4*x+y);
+	result += check_factor_expanded(e);
+
+	e = -(-4+4*x+5*y)*(1+4*x+5*y)*(2+3*y)*(1+2*x-y)*(4+2*x+y);
+	result += check_factor_expanded(e);
+
+	e = (-3+y-2*x)*(4+3*y-4*x)*(3+3*y+2*x)*(-2+3*y+2*x)*(-1+4*y+3*x);
+	result += check_factor_expanded(e);
+
+	e = (-9+7*x+y)*(-5+6*x+y)*(4+2*x+y)*(5+2*x-y)*(7+9*x-y)*(8+6*x-y);
+	result += check_factor_expanded(e);
+
+	e = pow(2*x-y,2)*(-1+6*x-y)*(-1+3*x-y)*(-2+4*x-y)*(1+4*x-y)*(4*x-y)*(2+4*x-y);
+	result += check_factor_expanded(e);
+
+	e = (5+2*y-3*x)*(-4+4*y+3*x)*(-3+4*y-2*x)*(4+5*y-x)*(3*y+2*x)*(-1+3*y+5*x)*(5+3*y+4*x);
+	result += check_factor_expanded(e);
+
+	return result;
+}
+
 unsigned exam_factor()
 {
 	unsigned result = 0;
@@ -291,6 +327,7 @@ unsigned exam_factor()
 	result += exam_factor3(); cout << '.' << flush;
 	result += exam_factor_content(); cout << '.' << flush;
 	result += exam_factor_wang(); cout << '.' << flush;
+	result += exam_factor_magerya(); cout << '.' << flush;
 
 	return result;
 }
