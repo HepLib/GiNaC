@@ -606,6 +606,9 @@ ex basic::subs_one_level(const exmap & m, unsigned options) const
  *  will already be evaluated. */
 ex basic::subs(const exmap & m, unsigned options) const
 {
+    ex sol = subs_one_level(m, options);
+    if(!are_ex_trivially_equal(sol, *this)) return sol;
+    
 	size_t num = nops();
 	if (num) {
 

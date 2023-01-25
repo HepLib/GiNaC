@@ -376,6 +376,9 @@ found:		;
 
 ex expairseq::subs(const exmap & m, unsigned options) const
 {
+    ex sol = subs_one_level(m, options);
+    if(!are_ex_trivially_equal(sol, *this)) return sol;
+
 	epvector subsed = subschildren(m, options);
 	if (!subsed.empty())
 		return ex_to<basic>(thisexpairseq(std::move(subsed), overall_coeff, (options & subs_options::no_index_renaming) == 0));

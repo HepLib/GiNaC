@@ -613,7 +613,10 @@ bool power::has(const ex & other, unsigned options) const
 extern bool tryfactsubs(const ex &, const ex &, int &, exmap&);
 
 ex power::subs(const exmap & m, unsigned options) const
-{	
+{
+    ex sol = subs_one_level(m, options);
+    if(!are_ex_trivially_equal(sol, *this)) return sol;
+    
 	const ex &subsed_basis = basis.subs(m, options);
 	const ex &subsed_exponent = exponent.subs(m, options);
 

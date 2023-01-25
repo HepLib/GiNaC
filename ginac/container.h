@@ -323,6 +323,9 @@ ex container<C>::subs(const exmap & m, unsigned options) const
 	// f(x).subs(x==f^-1(x))
 	//   -> f(f^-1(x))  [subschildren]
 	//   -> x           [eval]   /* must not subs(x==f^-1(x))! */
+    ex sol = subs_one_level(m, options);
+    if(!are_ex_trivially_equal(sol, *this)) return sol;
+
 	STLT subsed = subschildren(m, options);
 	if (!subsed.empty()) {
 		ex result(thiscontainer(subsed));
