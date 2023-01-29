@@ -323,8 +323,18 @@ ex container<C>::subs(const exmap & m, unsigned options) const
 	// f(x).subs(x==f^-1(x))
 	//   -> f(f^-1(x))  [subschildren]
 	//   -> x           [eval]   /* must not subs(x==f^-1(x))! */
-    ex sol = subs_one_level(m, options);
-    if(!are_ex_trivially_equal(sol, *this)) return sol;
+ 
+   // copied from basic::subs_one_level
+   if (options & subs_options::no_pattern) {
+		ex thisex = *this;  // NB: *this may be deleted here.
+		auto it = m.find(thisex);
+		if (it != m.end()) return it->second;
+	} else {
+		for (auto & it : m) {
+			exmap repl_lst;
+			if (match(ex_to<basic>(it.first), repl_lst)) return it.second.subs(repl_lst, options | subs_options::no_pattern);
+		}
+	}
 
 	STLT subsed = subschildren(m, options);
 	if (!subsed.empty()) {
