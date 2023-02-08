@@ -187,8 +187,8 @@ static unsigned exam_subs()
 
 	e1 = sin(1+sin(x));
 	e2 = e1.subs(sin(wild()) == cos(wild()));
-	if (!e2.is_equal(cos(1+cos(x)))) {
-		clog << "sin(1+sin(x)).subs(sin($1)==cos($1)) erroneously returned " << e2 << " instead of cos(1+cos(x))" << endl;
+	if (!e2.is_equal(cos(1+sin(x)))) {
+		clog << "sin(1+sin(x)).subs(sin($1)==cos($1)) erroneously returned " << e2 << " instead of cos(1+sin(x))" << endl;
 		++result;
 	}
 

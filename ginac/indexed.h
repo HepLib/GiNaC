@@ -154,6 +154,23 @@ public:
 	void archive(archive_node& n) const override;
 	/** Read (a.k.a. deserialize) indexed object from archive. */
 	void read_archive(const archive_node& n) override;
+    
+    // back to the official version for container<std::vector>::subs   
+    ex subs(const exmap & m, unsigned options) const {
+        STLT subsed = subschildren(m, options);
+        if (!subsed.empty()) {
+            ex result(thiscontainer(subsed));
+            if (is_a<container<std::vector>>(result))
+                return ex_to<basic>(result).subs_one_level(m, options);
+            else
+                return result;
+        } else {
+            if (is_a<container<std::vector>>(*this))
+                return subs_one_level(m, options);
+            else
+                return *this;
+        }
+    }
 protected:
 	ex derivative(const symbol & s) const override;
 	ex thiscontainer(const exvector & v) const override;
