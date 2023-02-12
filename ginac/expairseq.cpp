@@ -387,14 +387,11 @@ ex expairseq::subs(const exmap & m, unsigned options) const
 			if (match(ex_to<basic>(it.first), repl_lst)) return it.second.subs(repl_lst, options | subs_options::no_pattern);
 		}
 	}
-
+  
 	epvector subsed = subschildren(m, options);
 	if (!subsed.empty())
 		return ex_to<basic>(thisexpairseq(std::move(subsed), overall_coeff, (options & subs_options::no_index_renaming) == 0));
-	else if ((options & subs_options::algebraic) && is_exactly_a<mul>(*this))
-		return static_cast<const mul *>(this)->algebraic_subs_mul(m, options);
-	else
-		return subs_one_level(m, options);
+    return *this;
 }
 
 // protected

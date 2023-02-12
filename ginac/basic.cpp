@@ -639,13 +639,15 @@ ex basic::subs(const exmap & m, unsigned options) const
 					copy->let_op(i) = op(i).subs(m, options);
 
 				// Perform substitutions on the new object as a whole
-				return copy->subs_one_level(m, options);
+				//return copy->subs_one_level(m, options);
+                return *copy;
 			}
 		}
 	}
 
 	// Nothing changed or no subexpressions
-	return subs_one_level(m, options);
+	//return subs_one_level(m, options);
+    return *this;
 }
 
 /** Default interface of nth derivative ex::diff(s, n).  It should be called

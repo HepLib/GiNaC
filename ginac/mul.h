@@ -54,7 +54,6 @@ public:
 	int degree(const ex & s) const override;
 	int ldegree(const ex & s) const override;
 	ex coeff(const ex & s, int n = 1) const override;
-	bool has(const ex & other, unsigned options = 0) const override;
 	ex eval() const override;
 	ex evalf() const override;
 	ex real_part() const override;
@@ -88,9 +87,6 @@ protected:
 	// new virtual functions which can be overridden by derived classes
 	// none
 	
-	// non-virtual functions in this class
-public:
-	ex algebraic_subs_mul(const exmap & m, unsigned options) const;
 protected:
 	void find_real_imag(ex&, ex&) const;
 	void print_overall_coeff(const print_context & c, const char *mul_sym) const;

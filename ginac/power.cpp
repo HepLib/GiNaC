@@ -587,28 +587,6 @@ ex power::evalm() const
 	return dynallocate<power>(ebasis, eexponent);
 }
 
-bool power::has(const ex & other, unsigned options) const
-{
-	if (!(options & has_options::algebraic))
-		return basic::has(other, options);
-	if (!is_a<power>(other))
-		return basic::has(other, options);
-	if (!exponent.info(info_flags::integer) ||
-	    !other.op(1).info(info_flags::integer))
-		return basic::has(other, options);
-	if (exponent.info(info_flags::posint) &&
-	    other.op(1).info(info_flags::posint) &&
-	    ex_to<numeric>(exponent) > ex_to<numeric>(other.op(1)) &&
-	    basis.match(other.op(0)))
-		return true;
-	if (exponent.info(info_flags::negint) &&
-	    other.op(1).info(info_flags::negint) &&
-	    ex_to<numeric>(exponent) < ex_to<numeric>(other.op(1)) &&
-	    basis.match(other.op(0)))
-		return true;
-	return basic::has(other, options);
-}
-
 // from mul.cpp
 extern bool tryfactsubs(const ex &, const ex &, int &, exmap&);
 
@@ -625,29 +603,15 @@ ex power::subs(const exmap & m, unsigned options) const
 			if (match(ex_to<basic>(it.first), repl_lst)) return it.second.subs(repl_lst, options | subs_options::no_pattern);
 		}
 	}
-    
+     
 	const ex &subsed_basis = basis.subs(m, options);
 	const ex &subsed_exponent = exponent.subs(m, options);
 
 	if (!are_ex_trivially_equal(basis, subsed_basis)
 	 || !are_ex_trivially_equal(exponent, subsed_exponent)) 
 		return dynallocate<power>(subsed_basis, subsed_exponent);
-
-	if (!(options & subs_options::algebraic))
-		return subs_one_level(m, options);
-
-	for (auto & it : m) {
-		int nummatches = std::numeric_limits<int>::max();
-		exmap repls;
-		if (tryfactsubs(*this, it.first, nummatches, repls)) {
-			ex anum = it.second.subs(repls, subs_options::no_pattern);
-			ex aden = it.first.subs(repls, subs_options::no_pattern);
-			ex result = (*this) * pow(anum/aden, nummatches);
-			return (ex_to<basic>(result)).subs_one_level(m, options);
-		}
-	}
-
-	return subs_one_level(m, options);
+        
+    return *this;
 }
 
 ex power::eval_ncmul(const exvector & v) const
