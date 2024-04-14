@@ -1,0 +1,22 @@
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  ubuntu-codecoverage:
+    name: Ubuntu 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: "build"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen
+          sudo apt-get install -y fig2dev
+          sudo apt-get install -y texinfo
+          sudo apt-get install -y libcln-dev
+          sudo apt-get install -y byacc
+          sudo apt-get install -y g++
+          ./configure
+          make -j 4
