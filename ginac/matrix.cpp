@@ -227,12 +227,24 @@ ex & matrix::let_op(size_t i)
 
 ex matrix::subs(const exmap & mp, unsigned options) const
 {
+   // copied from basic::subs_one_level, m -> mp
+   if (options & subs_options::no_pattern) {
+		ex thisex = *this;  // NB: *this may be deleted here.
+		auto it = mp.find(thisex);
+		if (it != mp.end()) return it->second;
+	} else {
+		for (auto & it : mp) {
+			exmap repl_lst;
+			if (match(ex_to<basic>(it.first), repl_lst)) return it.second.subs(repl_lst, options | subs_options::no_pattern);
+		}
+	}
+
 	exvector m2(row * col);
 	for (unsigned r=0; r<row; ++r)
 		for (unsigned c=0; c<col; ++c)
 			m2[r*col+c] = m[r*col+c].subs(mp, options);
 
-	return matrix(row, col, std::move(m2)).subs_one_level(mp, options);
+	return matrix(row, col, std::move(m2));
 }
 
 /** Complex conjugate every matrix entry. */

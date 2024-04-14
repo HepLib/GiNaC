@@ -178,13 +178,24 @@ ex relational::map(map_function & f) const
 
 ex relational::subs(const exmap & m, unsigned options) const
 {
+   // copied from basic::subs_one_level
+   if (options & subs_options::no_pattern) {
+		ex thisex = *this;  // NB: *this may be deleted here.
+		auto it = m.find(thisex);
+		if (it != m.end()) return it->second;
+	} else {
+		for (auto & it : m) {
+			exmap repl_lst;
+			if (match(ex_to<basic>(it.first), repl_lst)) return it.second.subs(repl_lst, options | subs_options::no_pattern);
+		}
+	}
+
 	const ex & subsed_lh = lh.subs(m, options);
 	const ex & subsed_rh = rh.subs(m, options);
 
 	if (!are_ex_trivially_equal(lh, subsed_lh) || !are_ex_trivially_equal(rh, subsed_rh))
-		return relational(subsed_lh, subsed_rh, o).subs_one_level(m, options);
-	else
-		return subs_one_level(m, options);
+		return relational(subsed_lh, subsed_rh, o);
+	return *this;
 }
 
 ex relational::eval_ncmul(const exvector & v) const

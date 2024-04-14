@@ -29,6 +29,7 @@
 #include "parser.h"
 #include "lexer.h"
 #include "debug.h"
+#include "relational.h"
 
 #include <sstream>
 #include <stdexcept>
@@ -42,7 +43,7 @@ static inline bool is_binop(const int c);
 /// Get the precedence of the pending binary operator.
 static int get_tok_prec(const int c);
 
-/// binoprhs: ([+*/^-] primary)*
+/// binoprhs: ([+*/^-=] primary)*
 ex parser::parse_binop_rhs(int expr_prec, ex& lhs)
 {
 	exvector args;
@@ -154,6 +155,12 @@ static ex make_binop_expr(const int binop, const exvector& args)
 						std::string(__func__) 
 						+ ": power should have exactly 2 operands");
 			return pow(args[0], args[1]);
+        case '=':
+			if (args.size() != 2)
+				throw std::invalid_argument(
+						std::string(__func__)
+						+ ": relational should have exactly 2 operands");
+           return relational(args[0], args[1]);
 		default:
 			throw std::invalid_argument(
 					std::string(__func__) 
@@ -170,6 +177,7 @@ static inline bool is_binop(const int c)
 		case '*':
 		case '/':
 		case '^':
+        case '=':
 			return true;
 		default:
 			return false;
@@ -180,6 +188,8 @@ static inline bool is_binop(const int c)
 static int get_tok_prec(const int c)
 {
 	switch (c) {
+        case '=':
+            return 10;
 		case '+':
 		case '-':
 			return 20;

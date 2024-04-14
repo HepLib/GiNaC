@@ -607,8 +607,7 @@ ex power::subs(const exmap & m, unsigned options) const
 	const ex &subsed_basis = basis.subs(m, options);
 	const ex &subsed_exponent = exponent.subs(m, options);
 
-	if (!are_ex_trivially_equal(basis, subsed_basis)
-	 || !are_ex_trivially_equal(exponent, subsed_exponent)) 
+	if (!are_ex_trivially_equal(basis, subsed_basis) || !are_ex_trivially_equal(exponent, subsed_exponent))
 		return dynallocate<power>(subsed_basis, subsed_exponent);
         
     return *this;

@@ -337,18 +337,8 @@ ex container<C>::subs(const exmap & m, unsigned options) const
 	}
 
 	STLT subsed = subschildren(m, options);
-	if (!subsed.empty()) {
-		ex result(thiscontainer(subsed));
-		if (is_a<container<C>>(result))
-			return ex_to<basic>(result).subs_one_level(m, options);
-		else
-			return result;
-	} else {
-		if (is_a<container<C>>(*this))
-			return subs_one_level(m, options);
-		else
-			return *this;
-	}
+	if (!subsed.empty()) return thiscontainer(subsed);
+	else return *this;
 }
 
 /** Compare two containers of the same type. */
