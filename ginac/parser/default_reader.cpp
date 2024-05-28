@@ -69,16 +69,6 @@ private:
 	registered_functions_hack& operator=(const registered_functions_hack&);
 };
 
-// Encode an integer into a pointer to a function. Since functions
-// are aligned (the minimal alignment depends on CPU architecture)
-// we can distinguish between pointers and integers.
-static reader_func encode_serial_as_reader_func(unsigned serial)
-{
-	uintptr_t u = (uintptr_t)serial;
-	u = (u << 1) | (uintptr_t)1;
-	reader_func ptr = (reader_func)((void *)u);
-	return ptr;
-}
 
 const prototype_table& get_default_reader()
 {
@@ -87,14 +77,14 @@ const prototype_table& get_default_reader()
 	static prototype_table reader;
 	if (!initialized) {
 		
-		reader[make_pair("sqrt", 1)] = sqrt_reader;
-		reader[make_pair("pow", 2)] = pow_reader;
-		reader[make_pair("power", 2)] = power_reader;
-		reader[make_pair("lst", 0)] = lst_reader;
+		reader.insert({{"sqrt", 1}, reader_func(sqrt_reader)});
+        reader.insert({{"pow", 2}, reader_func(pow_reader)});
+        reader.insert({{"power", 2}, reader_func(power_reader)});
+        reader.insert({{"lst", 0}, reader_func(lst_reader)});
 		unsigned serial = 0;
 		for (auto & it : registered_functions_hack::get_registered_functions()) {
 			prototype proto = make_pair(it.get_name(), it.get_nparams());
-			reader[proto] = encode_serial_as_reader_func(serial);
+			reader.insert({{it.get_name(), it.get_nparams()}, reader_func(serial)});
 			++serial;
 		}
 		initialized = true;
@@ -109,10 +99,10 @@ const prototype_table& get_builtin_reader()
 	static prototype_table reader;
 	if (!initialized) {
 		
-		reader[make_pair("sqrt", 1)] = sqrt_reader;
-		reader[make_pair("pow", 2)] = pow_reader;
-		reader[make_pair("power", 2)] = power_reader;
-		reader[make_pair("lst", 0)] = lst_reader;
+		reader.insert({{"sqrt", 1}, reader_func(sqrt_reader)});
+        reader.insert({{"pow", 2}, reader_func(pow_reader)});
+        reader.insert({{"power", 2}, reader_func(power_reader)});
+        reader.insert({{"lst", 0}, reader_func(lst_reader)});
 		enum {
 			log,
 			exp,
@@ -147,7 +137,7 @@ const prototype_table& get_builtin_reader()
 		unsigned serial = 0;
 		for ( ; serial<NFUNCTIONS; ++it, ++serial ) {
 			prototype proto = make_pair(it->get_name(), it->get_nparams());
-			reader[proto] = encode_serial_as_reader_func(serial);
+			reader.insert({{it->get_name(), it->get_nparams()}, reader_func(serial)});
 		}
 		initialized = true;
 	}

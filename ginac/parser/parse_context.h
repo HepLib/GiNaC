@@ -63,7 +63,17 @@ typedef std::pair<std::string, std::size_t> prototype;
  * The parser uses (an associative array of) such functions to construct
  * (GiNaC) classes and functions from a sequence of characters.
  */
-typedef ex (*reader_func)(const exvector& args);
+class reader_func {
+    enum { FUNCTION_PTR, GINAC_FUNCTION };
+public:
+    reader_func(ex (*func_)(const exvector& args)) : type(FUNCTION_PTR), serial(0), func(func_) {}
+    reader_func(unsigned serial_) : type(GINAC_FUNCTION), serial(serial_), func(nullptr) {}
+    ex operator()(const exvector& args) const;
+private:
+    unsigned type;
+    unsigned serial;
+    ex (*func)(const exvector& args);
+};
 
 /**
  * Prototype table.

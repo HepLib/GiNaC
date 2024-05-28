@@ -34,34 +34,16 @@
 
 namespace GiNaC {
 
-// <KLUDGE>
-// Find out if ptr is a pointer to a function or a specially crafted integer.
-// It's possible to distinguish between these because functions are aligned.
-// Returns true if ptr is a pointer and false otherwise.
-static bool decode_serial(unsigned& serial, const reader_func ptr)
-{
-	uintptr_t u = (uintptr_t)(void *)ptr;
-	if (u & 1) {
-		u >>= 1;
-		serial = (unsigned)u;
-		return false;
-	}
-	return true;
+ex reader_func::operator()(const exvector& args) const {
+	switch (type) {
+       case FUNCTION_PTR:
+               return func(args);
+       case GINAC_FUNCTION:
+                return function(serial, args);
+       default:
+               abort();
+       }
 }
-
-// Figures out if ptr is a pointer to function or a serial of GiNaC function.
-// In the former case calls that function, in the latter case constructs
-// GiNaC function with corresponding serial and arguments.
-static ex dispatch_reader_fcn(const reader_func ptr, const exvector& args)
-{
-	unsigned serial = 0; // dear gcc, could you please shut up?
-	bool is_ptr = decode_serial(serial, ptr);
-	if (is_ptr)
-		return ptr(args);
-	else
-		return function(serial, args);
-}
-// </KLUDGE>
 
 
 /// identifier_expr:  identifier |  identifier '(' expression* ')'
@@ -92,16 +74,14 @@ ex parser::parse_identifier_expr()
 	}
 	// Eat the ')'.
 	get_next_tok();
-	prototype the_prototype = make_pair(name, args.size());
-	auto reader = funcs.find(the_prototype);
+	auto reader = funcs.find({name, args.size()});
 	if (reader == funcs.end()) {
 		Parse_error_("no function \"" << name << "\" with " <<
 			     args.size() << " arguments");
 	}
 	// reader->second might be a pointer to a C++ function or a specially
 	// crafted serial of a GiNaC::function.
-	ex ret = dispatch_reader_fcn(reader->second, args);
-	return ret;
+	return reader->second(args);
 }
 
 /// paren_expr:  '(' expression ')'
@@ -225,7 +205,7 @@ ex parser::operator()(std::istream& input)
 	get_next_tok();
 	ex ret = parse_expression();
 	// parse_expression() stops if it encounters an unknown token.
-	// This is not a bug: since the parser is recursive checking
+	// This is not a bug: since the parser is recursive, checking
 	// whether the next token is valid is responsibility of the caller.
 	// Hence make sure nothing is left in the stream:
 	if (token != lexer::token_type::eof)

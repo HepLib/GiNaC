@@ -1026,13 +1026,28 @@ static ex Order_expl_derivative(const ex & arg, const symbol & s)
 	return Order(arg.diff(s));
 }
 
+static ex Order_power(const ex & x, const ex & e)
+{
+       // Order(x)^e -> Order(x^e) for positive integer e
+       if (is_exactly_a<numeric>(e) && e.info(info_flags::posint))
+               return Order(pow(x, e));
+       // NB: For negative exponents, the above could be wrong.
+       // This is because series() produces Order(x^n) to denote the order where
+       // it gave up. So, Order(x^n) can also be an x^(n+1) term if the x^n term
+       // vanishes. In this situation, 1/Order(x^n) can also be a x^(-n-1) term.
+       // Transforming it to Order(x^-n) would miss that.
+
+       return power(Order(x), e).hold();
+}
+
 REGISTER_FUNCTION(Order, eval_func(Order_eval).
                          series_func(Order_series).
                          latex_name("\\mathcal{O}").
                          expl_derivative_func(Order_expl_derivative).
                          conjugate_func(Order_conjugate).
                          real_part_func(Order_real_part).
-                         imag_part_func(Order_imag_part));
+                         imag_part_func(Order_imag_part).
+                         power_func(Order_power));
 
 //////////
 // Solve linear system
