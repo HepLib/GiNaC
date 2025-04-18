@@ -8,7 +8,7 @@
 #include <typeinfo>
 #include <cstring>
 #include "utils.h"
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__APPLE__)
 #define GINAC_HASH_USE_MANGLED_NAME 1
 #endif
 
